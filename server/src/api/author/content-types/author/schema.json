@@ -32,6 +32,14 @@
     },
     "MonthAuthor": {
       "type": "boolean"
+    },
+    "image": {
+      "allowedTypes": [
+        "images",
+        "files"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }
