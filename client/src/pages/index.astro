@@ -1,11 +1,42 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Card from '../components/card.astro'
+import Layout from "../layouts/Layout.astro";
+import AllBooks from "../components/Books.astro";
 
 
+const API_URL = "http://localhost:1337/api/books";
+const IMAGE_BASE_URL = "http://localhost:1337/uploads";
+
+const response = await fetch(API_URL);
+const data = await response.json();
+const books = data.data; // Array met boekinformatie
 ---
 
-<Layout>	
-	<h1>Bookstore</h1>
-	<Card title="Book Title" author="Author Name" />
+<Layout>
+	<section class="header">
+		<h1>Chanaya's bookstore</h1>
+	</section>
+
+	<section class="bestseller">
+		<h2>Bestsellers</h2>
+		<div>
+			{books.map((book) => (
+				<AllBooks book={book} imageUrl={IMAGE_BASE_URL} />
+			  ))}
+		</div>
+	</section>
+
+	<section class="author of the month">
+
+	</section>
 </Layout>
+
+<style>
+	.header {
+		background-image: url("../assets/hero.jpeg");
+		width: 100%;
+		height: 80vh;
+		background-position: center;
+		background-size: cover;
+		text-align: center;
+	}
+</style>

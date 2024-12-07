@@ -29,6 +29,9 @@
       "relation": "manyToMany",
       "target": "api::book.book",
       "mappedBy": "authors"
+    },
+    "MonthAuthor": {
+      "type": "boolean"
     }
   }
 }

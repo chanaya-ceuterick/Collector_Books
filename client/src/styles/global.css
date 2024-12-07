@@ -32,7 +32,6 @@ html {
 body {
   line-height: 1.5;
   color: var(--c-darkgreen);
-  padding: clamp(1rem, 5vw, 5rem);
 
   background-color: white;
 
@@ -40,8 +39,14 @@ body {
   font-size: var(--s1);
 }
 
+section{
+  padding: clamp(1rem, 5vw, 5rem);
+}
+
 h1 {
-  font-size: var(--s3);
+  font-size: 5rem;
+  color: white;
+  padding: 20vh 0;
 }
 
 h2 {

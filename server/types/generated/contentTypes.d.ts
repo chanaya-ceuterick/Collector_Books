@@ -392,6 +392,7 @@ export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
       'api::author.author'
     > &
       Schema.Attribute.Private;
+    MonthAuthor: Schema.Attribute.Boolean;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'name'>;

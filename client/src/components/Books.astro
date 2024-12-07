@@ -1,4 +1,67 @@
 ---
+const { book, imageUrl } = Astro.props;
+if (!book.bestseller) {
+  return null;
+}
+---
+
+<div class="card">
+  <div class="card-image">
+    <img
+      src={`${imageUrl}/${book.slug}.jpg`}
+      alt={book.title || "No title"}
+    />
+  </div>
+  <div class="card-content">
+    <div class="text">
+      <h3>{book.title || "No title"}</h3>
+    </div>
+    <button class="read-more">Read More</button>
+  </div>
+</div>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #f0f0f0;
+  }
+
+  .card-image {
+    background-color: #d3d3d3;
+    height: 160px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-image img {
+    max-height: 100%;
+    width: auto;
+  }
+
+  .card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: #fff;
+  }
+
+  .card-content .text h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+  }
+</style>
+
+
+<!-- ---
 const API_URL = "http://localhost:1337/api/books";
 
 // Fetch the data from the API
@@ -23,7 +86,6 @@ const IMAGE_BASE_URL = "http://localhost:1337/uploads";
       <div class="card-content">
         <div class="text">
           <h3>{book.title || "No title"}</h3>
-          {/* <p>{book.description || "No description available"}</p> */}
         </div>
         <button class="read-more">Read More</button>
       </div>
@@ -81,4 +143,5 @@ const IMAGE_BASE_URL = "http://localhost:1337/uploads";
     font-size: 12px;
     color: #777;
   }
-</style>
+</style> -->
+
