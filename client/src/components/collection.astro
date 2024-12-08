@@ -1,8 +1,26 @@
 ---
-const API_URL = "http://localhost:1337/api/collections";
+const API_URL = "http://localhost:1337/api/collections?populate=books";
+const IMAGE_BASE_URL = "http://localhost:1337/uploads";
 
 const response = await fetch(API_URL);
 const data = await response.json();
-const collections = data.data; 
+const collections = data.data;
 ---
 
+<div class="card-container">
+    {
+        collections.map((collection) => (
+            <div class="card card--col">
+                <div class="card__image">
+                    <img
+                        src={`${IMAGE_BASE_URL}/${collection.slug}.jpg`}
+                        alt={collection.name || "No title"}
+                    />
+                </div>
+                <div class="card_txt">
+                    <h3>{collection.name || "No title"}</h3>
+                </div>
+            </div>
+        ))
+    }
+</div>

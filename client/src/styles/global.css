@@ -83,3 +83,50 @@ button:hover {
   flex-wrap: wrap;
   gap: 16px;
 }
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #f0f0f0;
+}
+
+.card--col {
+  width: fit-content;
+}
+
+.card__image {
+  background-color: var(--c-lightgrey);
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card__image img {
+  max-height: 100%;
+  width: auto;
+}
+
+.card__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--s1);
+  background-color: white;
+}
+
+.card_txt h3 {
+  margin: auto;
+  width: 90%;
+  height: 3.3rem;
+  text-align: center;
+  padding-top: .5rem;
+}
+
+.card_txt  {
+  background-color: white;
+}
