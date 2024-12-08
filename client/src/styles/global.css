@@ -19,8 +19,8 @@ html {
 
   --c-green: #8cfa70;
   --c-darkgreen: #205e11;
-  --c-lightgrey: #a2a2a2;
-  --c-darkgrey: #4c4c4c;
+  --c-lightgrey: #dbdbdb;
+  --c-darkgrey: #818181;
 
   --border-radius: 1.25rem;
 
@@ -40,7 +40,7 @@ body {
 }
 
 section{
-  padding: clamp(1rem, 5vw, 4rem);
+  padding: clamp(1rem, 5vw, 5rem);
 }
 
 h1 {
