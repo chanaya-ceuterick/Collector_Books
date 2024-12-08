@@ -1,13 +1,60 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Card from "../components/Cards.astro";
+import AuthorMonth from "../components/Author.astro";
+import Collection from "../components/collection.astro";
+
+const API_URL = "http://localhost:1337/api/books";
+
+const response = await fetch(API_URL);
+const data = await response.json();
+const books = data.data;
+
+// Filteren van boeken
+const bestsellerBooks = books.filter((book) => book.bestseller);
+const saleBooks = books.filter((book) => book.sale);
+---
+
+<Layout>
+  <section class="header">
+    <h1>Chanaya's Bookstore</h1>
+  </section>
+
+  <section class="bestseller">
+    <h2>Bestsellers</h2>
+    <div class="card-container">
+      {bestsellerBooks.map((book) => <Card book={book} />)}
+    </div>
+    <a href="/books">Show all books</a>
+  </section>
+
+  <section class="authorOfTheMonth">
+    <h2>Author of the Month</h2>
+    <AuthorMonth />
+  </section>
+
+  <section class="onSale">
+    <h2>On Sale</h2>
+    <div class="card-container">
+      {saleBooks.map((book) => <Card book={book} />)}
+    </div>
+  </section>
+
+  <section class="collections">
+    <h2>Collections</h2>
+    <Collection />
+  </section>
+</Layout>
+
+
+<!-- ---
+import Layout from "../layouts/Layout.astro";
 import AllBooks from "../components/Cards.astro";
 import SaleBooks from "../components/Sale.astro";
 import AuthorMonth from "../components/Author.astro";
 import Collection from "../components/collection.astro";
 
-
 const API_URL = "http://localhost:1337/api/books";
-
 
 const response = await fetch(API_URL);
 const data = await response.json();
@@ -22,16 +69,14 @@ const books = data.data;
 	<section class="bestseller">
 		<h2>Bestsellers</h2>
 		<div class="card-container">
-			{books.map((book) => (
-				<AllBooks book={book} />
-			  ))}
+			{books.map((book) => <AllBooks book={book} />)}
 		</div>
-		<a href="/books" >Show all books</a> 
+		<a href="/books">Show all books</a>
 	</section>
 
 	<section class="authorOfTheMonth">
 		<h2>Author of the month</h2>
-		<AuthorMonth/>
+		<AuthorMonth />
 	</section>
 
 	<section class="onSale">
@@ -47,5 +92,4 @@ const books = data.data;
 		<h2>Collections</h2>
 		<Collection />
 	</section>
-
-</Layout>
+</Layout> -->

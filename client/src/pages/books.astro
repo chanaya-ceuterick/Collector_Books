@@ -1,13 +1,18 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import BooksAll from '../components/Books.astro'
+import Layout from "../layouts/Layout.astro";
+import BooksAll from "../components/Cards.astro";
 
+const API_URL = "http://localhost:1337/api/books";
 
+const response = await fetch(API_URL);
+const data = await response.json();
+const books = data.data;
 ---
 
-<Layout>	
-	<h1>Bookstore</h1>
-	<BooksAll title="Book Title" author="Author Name" />
-
-	
+<Layout>
+	<section>
+		<div class="card-container">
+			{books.map((book) => <BooksAll book={book} />)}
+		</div>
+	</section>
 </Layout>
