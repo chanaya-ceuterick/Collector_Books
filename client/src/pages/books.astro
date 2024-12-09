@@ -2,52 +2,102 @@
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Cards.astro";
 
-const API_URL = "http://localhost:1337/api/books";
-const API_URL_CAT = "http://localhost:1337/api/categories";
-
-const response = await fetch(API_URL);
-const data = await response.json();
-const books = data.data;
+const API_URL_CAT = "http://localhost:1337/api/categories?populate=books";
 
 const responseCat = await fetch(API_URL_CAT);
 const dataCat = await responseCat.json();
 const cats = dataCat.data;
+
+// Default category and books initialization
+let selectedCategory = cats[0];
+let books = selectedCategory.books;
 ---
 
 <Layout>
-	<section>
-		<h2>Books</h2>
-		<div class="categories">
-			{
-				cats.map((cat) => (
-					<button class="categories__catBtn">{cat.name}</button>
-				))
-			}
-		</div>
-		<div class="card-container">
-			{books.map((book) => <Card book={book} />)}
-		</div>
-	</section>
+  <section>
+    <h2>Books</h2>
+
+    <div class="categories">
+      {cats.map((cat) => (
+        <button
+          class="categories__catBtn"
+          data-category-id={cat.documentId}
+        >
+          {cat.name}
+        </button>
+      ))}
+    </div>
+
+    <div class="card-container">
+      {books.map((book) => (
+        <Card book={book} />
+      ))}
+    </div>
+  </section>
+
+  <script type="module" client:load>
+    // JavaScript code for handling category selection
+    document.addEventListener("DOMContentLoaded", () => {
+      const categoryButtons = document.querySelectorAll(".categories__catBtn");
+
+      categoryButtons.forEach((button) => {
+        button.addEventListener("click", (event) => {
+          const categoryId = event.target.getAttribute("data-category-id");
+          
+          // Fetch the selected category
+          fetch(`http://localhost:1337/api/categories/${categoryId}?populate=books`)
+            .then((response) => response.json())
+            .then((data) => {
+              const selectedCategory = data.data;
+              const books = selectedCategory.books;
+
+              // Dynamically update the book display
+              const cardContainer = document.querySelector(".card-container");
+              cardContainer.innerHTML = ""; // Clear existing books
+
+              books.forEach((book) => {
+                // Create and append book cards dynamically
+                const card = document.createElement("div");
+                card.classList.add("card");
+                card.innerHTML = `
+                  <h3>${book.title}</h3>
+                  <p>${book.author}</p>
+                `;
+                cardContainer.appendChild(card);
+              });
+            });
+        });
+      });
+    });
+  </script>
 </Layout>
 
 <style>
-	.categories {
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-	}
+  .categories {
+    display: flex;
+    justify-content: space-between;
+  }
 
-	.categories__catBtn {
-		background-color: var(--c-green);
-		padding: 1rem 2rem;
-		border-radius: 4px;
-		cursor: pointer;
-		transition: background-color 0.2s;
-		margin-bottom: var(--s2);
-	}
+  .categories__catBtn {
+    padding: 1rem 2rem;
+    background-color: var(--c-green);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 10px;
+  }
 
-	.categories__catBtn:hover {
-		background-color: var(--c-darkgreen);
-		color: white;
-	}
+  .categories__catBtn:hover {
+    background-color: var(--c-darkgreen);
+    color: white;
+  }
+
+  .card-container {
+    margin-top: 20px;
+  }
+
+  .card {
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+  }
 </style>
