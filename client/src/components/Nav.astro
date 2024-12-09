@@ -1,12 +1,27 @@
 ---
-// import { toggleNav } from '../js/nav.js';
+const { currentPath } = Astro.props;
 ---
+<script client:load>
+  document.addEventListener("DOMContentLoaded", () => {
+    const navLinks = document.querySelectorAll(".topnav a");
+    const currentPath = window.location.pathname;
+
+    navLinks.forEach(link => {
+      if (link.getAttribute("href") === currentPath) {
+        link.classList.add("active");
+      } else {
+        link.classList.remove("active");
+      }
+    });
+  });
+</script>
 
 <div class="topnav" id="myTopnav">
-    <a href="/" class="active">Home</a>
-    <a href="/books">Books</a>
-    <a href="#contact">Contact</a>
-    <a href="#about">About</a>
+    <a href="/" class={currentPath === "/" ? "active" : ""}>Home</a>
+    <a href="/books" class={currentPath === "/books" ? "active" : ""}>Books</a>
+    <a href="#contact" class={currentPath === "#contact" ? "active" : ""}>Contact</a>
+    <a href="#about" class={currentPath === "#about" ? "active" : ""}>About</a>
+  
     <a href="javascript:void(0);" class="icon" onclick="document.getElementById('myTopnav').classList.toggle('responsive')">&#9776;</a>
   </div>
 
