@@ -1,7 +1,7 @@
 ---
 import "../styles/reset.css";
 import "../styles/global.css";
-
+import Navigation from "../components/Nav.astro";
 
 const API_URL = "http://localhost:1337/api/books";
 ---
@@ -16,6 +16,7 @@ const API_URL = "http://localhost:1337/api/books";
 		<title>Bookstore</title>
 	</head>
 	<body>
+		<Navigation currentPath={Astro.request.url.pathname} />
 		<slot />
 	</body>
 </html>

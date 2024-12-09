@@ -1,23 +1,28 @@
 ---
-//
+const { currentPath } = Astro.props;
 ---
+<script client:load>
+  document.addEventListener("DOMContentLoaded", () => {
+    const navLinks = document.querySelectorAll(".topnav a");
+    const currentPath = window.location.pathname;
+
+    navLinks.forEach(link => {
+      if (link.getAttribute("href") === currentPath) {
+        link.classList.add("active");
+      } else {
+        link.classList.remove("active");
+      }
+    });
+  });
+</script>
 
 <div class="topnav" id="myTopnav">
-    <a href="#home" class="active">Home</a>
-    <a href="#news">News</a>
-    <a href="#contact">Contact</a>
-    <div class="dropdown">
-      <button class="dropbtn">Dropdown
-        <i class="fa fa-caret-down"></i>
-      </button>
-      <div class="dropdown-content">
-        <a href="#">Link 1</a>
-        <a href="#">Link 2</a>
-        <a href="#">Link 3</a>
-      </div>
-    </div>
-    <a href="#about">About</a>
-    <a href="javascript:void(0);" class="icon" onclick="myFunction()">&#9776;</a>
+    <a href="/" class={currentPath === "/" ? "active" : ""}>Home</a>
+    <a href="/books" class={currentPath === "/books" ? "active" : ""}>Books</a>
+    <a href="#contact" class={currentPath === "#contact" ? "active" : ""}>Contact</a>
+    <a href="#about" class={currentPath === "#about" ? "active" : ""}>About</a>
+  
+    <a href="javascript:void(0);" class="icon" onclick="document.getElementById('myTopnav').classList.toggle('responsive')">&#9776;</a>
   </div>
 
   <style>
@@ -33,7 +38,7 @@
   display: block;
   color: white;
   text-align: center;
-  padding: 14px 16px;
+  padding: 15px 16px;
   text-decoration: none;
   font-size: 17px;
 }
