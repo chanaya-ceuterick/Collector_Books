@@ -3,10 +3,15 @@ import Layout from "../layouts/Layout.astro";
 import Card from "../components/Cards.astro";
 
 const API_URL_CAT = "http://localhost:1337/api/categories?populate=books";
+const API_URL = "http://localhost:1337/api/books";
 
 const responseCat = await fetch(API_URL_CAT);
 const dataCat = await responseCat.json();
 const cats = dataCat.data;
+
+const responseAll = await fetch(API_URL);
+const dataAll = await responseAll.json();
+const all = dataAll.data;
 
 // Default category and books initialization
 let selectedCategory = cats[0];
@@ -18,7 +23,8 @@ let books = selectedCategory.books;
     <h2>Books</h2>
 
     <div class="categories">
-      <button  class="categories__catBtn">All</button>
+      <!-- "All" button with no data-category-id -->
+      <button class="categories__catBtn" id="allBtn">All</button>
       {cats.map((cat) => (
         <button
           class="categories__catBtn"
@@ -38,49 +44,83 @@ let books = selectedCategory.books;
 
   <script type="module" client:load>
     const API_URL_CAT = "http://localhost:1337/api/categories";
+    const API_URL = "http://localhost:1337/api/books";
 
     document.addEventListener("DOMContentLoaded", () => {
       const categoryButtons = document.querySelectorAll(".categories__catBtn");
       const cardContainer = document.querySelector(".card-container");
+      const allButton = document.getElementById("allBtn");
 
       categoryButtons.forEach((button) => {
         button.addEventListener("click", async (event) => {
           const categoryId = event.target.getAttribute("data-category-id");
 
-          // Fetch the selected category
-          const response = await fetch(`${API_URL_CAT}/${categoryId}?populate=books`);
-          const data = await response.json();
-          const books = data.data.books || [];
+          if (categoryId) {
+            // Fetch the selected category's books
+            const response = await fetch(`${API_URL_CAT}/${categoryId}?populate=books`);
+            const data = await response.json();
+            const books = data.data.books || [];
 
-          // Clear existing books
-          cardContainer.innerHTML = "";
+            // Clear existing books and render new ones
+            cardContainer.innerHTML = "";
+            books.forEach((book) => {
+              const card = document.createElement("div");
+              card.classList.add("card");
+              card.innerHTML = `
+                <div class="card__image">
+                  <img
+                    src="http://localhost:1337/uploads/${book.slug}.jpg"
+                    alt="${book.title || "No title"}"
+                  />
+                </div>
+                <div class="card_txt">
+                  <h3>${book.title || "No title"}</h3>
+                </div>
+                <div class="card__content">
+                  <p class="card__price">&euro; ${book.price || "No Price"}</p>
+                  <button>Read More</button>
+                </div>
+              `;
+              cardContainer.appendChild(card);
+            });
+          }
+        });
+      });
 
-          // Render new books
-          books.forEach((book) => {
-            const card = document.createElement("div");
-            card.classList.add("card");
-            card.innerHTML = `
-              <div class="card__image">
-                <img
-                  src="http://localhost:1337/uploads/${book.slug}.jpg"
-                  alt="${book.title || "No title"}"
-                />
-              </div>
-              <div class="card_txt">
-                <h3>${book.title || "No title"}</h3>
-              </div>
-              <div class="card__content">
-                <p class="card__price">&euro; ${book.price || "No Price"}</p>
-                <button>Read More</button>
-              </div>
-            `;
-            cardContainer.appendChild(card);
-          });
+      // Event listener for "All" button
+      allButton.addEventListener("click", async () => {
+        // Fetch all books
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        const books = data.data || [];
+
+        // Clear existing books and render new ones
+        cardContainer.innerHTML = "";
+        books.forEach((book) => {
+          const card = document.createElement("div");
+          card.classList.add("card");
+          card.innerHTML = `
+            <div class="card__image">
+              <img
+                src="http://localhost:1337/uploads/${book.slug}.jpg"
+                alt="${book.title || "No title"}"
+              />
+            </div>
+            <div class="card_txt">
+              <h3>${book.title || "No title"}</h3>
+            </div>
+            <div class="card__content">
+              <p class="card__price">&euro; ${book.price || "No Price"}</p>
+              <button>Read More</button>
+            </div>
+          `;
+          cardContainer.appendChild(card);
         });
       });
     });
   </script>
 </Layout>
+
 
 <style>
   .categories {
