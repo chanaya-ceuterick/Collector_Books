@@ -36,36 +36,45 @@ let books = selectedCategory.books;
   </section>
 
   <script type="module" client:load>
-    // JavaScript code for handling category selection
+    const API_URL_CAT = "http://localhost:1337/api/categories";
+
     document.addEventListener("DOMContentLoaded", () => {
       const categoryButtons = document.querySelectorAll(".categories__catBtn");
+      const cardContainer = document.querySelector(".card-container");
 
       categoryButtons.forEach((button) => {
-        button.addEventListener("click", (event) => {
+        button.addEventListener("click", async (event) => {
           const categoryId = event.target.getAttribute("data-category-id");
-          
+
           // Fetch the selected category
-          fetch(`http://localhost:1337/api/categories/${categoryId}?populate=books`)
-            .then((response) => response.json())
-            .then((data) => {
-              const selectedCategory = data.data;
-              const books = selectedCategory.books;
+          const response = await fetch(`${API_URL_CAT}/${categoryId}?populate=books`);
+          const data = await response.json();
+          const books = data.data.books || [];
 
-              // Dynamically update the book display
-              const cardContainer = document.querySelector(".card-container");
-              cardContainer.innerHTML = ""; // Clear existing books
+          // Clear existing books
+          cardContainer.innerHTML = "";
 
-              books.forEach((book) => {
-                // Create and append book cards dynamically
-                const card = document.createElement("div");
-                card.classList.add("card");
-                card.innerHTML = `
-                  <h3>${book.title}</h3>
-                  <p>${book.author}</p>
-                `;
-                cardContainer.appendChild(card);
-              });
-            });
+          // Render new books
+          books.forEach((book) => {
+            const card = document.createElement("div");
+            card.classList.add("card");
+            card.innerHTML = `
+              <div class="card__image">
+                <img
+                  src="http://localhost:1337/uploads/${book.slug}.jpg"
+                  alt="${book.title || "No title"}"
+                />
+              </div>
+              <div class="card_txt">
+                <h3>${book.title || "No title"}</h3>
+              </div>
+              <div class="card__content">
+                <p class="card__price">&euro; ${book.price || "No Price"}</p>
+                <button>Read More</button>
+              </div>
+            `;
+            cardContainer.appendChild(card);
+          });
         });
       });
     });
