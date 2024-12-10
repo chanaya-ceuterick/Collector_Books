@@ -9,9 +9,9 @@ const responseCat = await fetch(API_URL_CAT);
 const dataCat = await responseCat.json();
 const cats = dataCat.data;
 
-const responseAll = await fetch(API_URL);
-const dataAll = await responseAll.json();
-const all = dataAll.data;
+// const responseAll = await fetch(API_URL);
+// const dataAll = await responseAll.json();
+// const all = dataAll.data;
 
 // Default category and books initialization
 let selectedCategory = cats[0];
@@ -23,7 +23,7 @@ let books = selectedCategory.books;
     <h2>Books</h2>
 
     <div class="categories">
-      <!-- "All" button with no data-category-id -->
+      <!-- "All" button to show all books -->
       <button class="categories__catBtn" id="allBtn">All</button>
       {cats.map((cat) => (
         <button
@@ -35,92 +35,79 @@ let books = selectedCategory.books;
       ))}
     </div>
 
-    <div class="card-container">
-      {books.map((book) => (
-        <Card book={book} />
-      ))}
+    <div class="card-container" id="card-container">
+      <!-- Books will be inserted here by JS -->
     </div>
   </section>
 
   <script type="module" client:load>
     const API_URL_CAT = "http://localhost:1337/api/categories";
     const API_URL = "http://localhost:1337/api/books";
+    const cardContainer = document.getElementById("card-container");
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const categoryButtons = document.querySelectorAll(".categories__catBtn");
-      const cardContainer = document.querySelector(".card-container");
-      const allButton = document.getElementById("allBtn");
+    // Fetch and display all books by default when the page loads
+    document.addEventListener("DOMContentLoaded", async () => {
+      const responseAll = await fetch(API_URL);
+      const dataAll = await responseAll.json();
+      const allBooks = dataAll.data || [];
 
-      categoryButtons.forEach((button) => {
-        button.addEventListener("click", async (event) => {
-          const categoryId = event.target.getAttribute("data-category-id");
+      // Clear the container and render all books
+      renderBooks(allBooks);
+    });
 
-          if (categoryId) {
-            // Fetch the selected category's books
-            const response = await fetch(`${API_URL_CAT}/${categoryId}?populate=books`);
-            const data = await response.json();
-            const books = data.data.books || [];
-
-            // Clear existing books and render new ones
-            cardContainer.innerHTML = "";
-            books.forEach((book) => {
-              const card = document.createElement("div");
-              card.classList.add("card");
-              card.innerHTML = `
-                <div class="card__image">
-                  <img
-                    src="http://localhost:1337/uploads/${book.slug}.jpg"
-                    alt="${book.title || "No title"}"
-                  />
-                </div>
-                <div class="card_txt">
-                  <h3>${book.title || "No title"}</h3>
-                </div>
-                <div class="card__content">
-                  <p class="card__price">&euro; ${book.price || "No Price"}</p>
-                  <button>Read More</button>
-                </div>
-              `;
-              cardContainer.appendChild(card);
-            });
-          }
-        });
+    // Function to render books
+    function renderBooks(books) {
+      cardContainer.innerHTML = ""; // Clear existing books
+      books.forEach((book) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.innerHTML = `
+          <div class="card__image">
+            <img
+              src="http://localhost:1337/uploads/${book.slug}.jpg"
+              alt="${book.title || "No title"}"
+            />
+          </div>
+          <div class="card_txt">
+            <h3>${book.title || "No title"}</h3>
+          </div>
+          <div class="card__content">
+            <p class="card__price">&euro; ${book.price || "No Price"}</p>
+            <button>Read More</button>
+          </div>
+        `;
+        cardContainer.appendChild(card);
       });
+    }
 
-      // Event listener for "All" button
-      allButton.addEventListener("click", async () => {
-        // Fetch all books
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        const books = data.data || [];
+    // Now handle category buttons
+    const categoryButtons = document.querySelectorAll(".categories__catBtn");
 
-        // Clear existing books and render new ones
-        cardContainer.innerHTML = "";
-        books.forEach((book) => {
-          const card = document.createElement("div");
-          card.classList.add("card");
-          card.innerHTML = `
-            <div class="card__image">
-              <img
-                src="http://localhost:1337/uploads/${book.slug}.jpg"
-                alt="${book.title || "No title"}"
-              />
-            </div>
-            <div class="card_txt">
-              <h3>${book.title || "No title"}</h3>
-            </div>
-            <div class="card__content">
-              <p class="card__price">&euro; ${book.price || "No Price"}</p>
-              <button>Read More</button>
-            </div>
-          `;
-          cardContainer.appendChild(card);
-        });
+    categoryButtons.forEach((button) => {
+      button.addEventListener("click", async (event) => {
+        const categoryId = event.target.getAttribute("data-category-id");
+
+        if (categoryId) {
+          // Fetch books for the selected category
+          const response = await fetch(`${API_URL_CAT}/${categoryId}?populate=books`);
+          const data = await response.json();
+          const books = data.data.books || [];
+
+          // Render the selected category's books
+          renderBooks(books);
+        } else {
+          // If the "All" button is clicked
+          const responseAll = await fetch(API_URL);
+          const dataAll = await responseAll.json();
+          const allBooks = dataAll.data || [];
+
+          // Render all books again
+          renderBooks(allBooks);
+        }
       });
     });
   </script>
 </Layout>
-
 
 <style>
   .categories {
@@ -151,3 +138,4 @@ let books = selectedCategory.books;
     margin-bottom: 10px;
   }
 </style>
+
