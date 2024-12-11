@@ -47,17 +47,14 @@ let books = selectedCategory.books;
     const API_URL_BOOKS = "http://localhost:1337/api/books/?populate=cover";
     const cardContainer = document.getElementById("card-container");
 
-    document.addEventListener("DOMContentLoaded", async () => {
-      try {
+
+
         const responseAll = await fetch(API_URL_BOOKS);
         const dataAll = await responseAll.json();
         const allBooks = dataAll.data || [];
         renderBooks(allBooks);
-      } catch (error) {
-        console.error("Error fetching books:", error);
-        renderBooks([]);
-      }
-    });
+      
+
 
     function renderBooks(books) {
       cardContainer.innerHTML = "";
@@ -99,6 +96,9 @@ let books = selectedCategory.books;
             console.error("Error fetching category books:", error);
             renderBooks([]);
           }
+        }
+        else{
+          renderBooks(allBooks);
         }
       });
     });
