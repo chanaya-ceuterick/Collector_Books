@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import Card from "../../components/Cards.astro";
 import fetchApi from "../../lib/strapi";
 
 // Fetch book data with Strapi
@@ -22,23 +23,50 @@ export async function getStaticPaths() {
 
 // Access the book prop passed to the component
 const { book } = Astro.props;
-console.log(book);
 const coverUrl = `http://localhost:1337${book.cover?.url}`;
+
+// Initialize otherBooks as an empty array
+let otherBooks = [];
+
+// Fetch books from the same category, only if the book has categories
+if (book.categories && book.categories.length > 0) {
+  try {
+    const categoryId = book.categories[0].documentId; // Use the first category's ID
+
+    // Fetch the category data from Strapi
+    const response = await fetch(`http://localhost:1337/api/categories/${categoryId}?populate=books.cover`);
+    const categoryData = await response.json();
+
+    // Check if the category data contains books
+    if (categoryData.data && categoryData.data.books) {
+      otherBooks = categoryData.data.books || []; // Get books from the same category
+
+      // Filter out the current book from the list of other books
+      otherBooks = otherBooks.filter((otherBook) => otherBook.documentId !== book.documentId);
+    }
+  } catch (error) {
+    console.error("Error fetching books for the same category:", error);
+  }
+}
+
+// Combine book title with category name
+const categoryName = book.categories && book.categories.length > 0 ? book.categories[0].name : "Unknown Category";
+const fullTitle = `${book.title} - ${categoryName}`;
 ---
 
 <Layout>
   <section class="detailBookInfo">
     <img src={coverUrl} alt={book.title} class="detailBookInfo__img" />
     <div>
-      <h1 class="detailBookInfo__title">{book.title}</h1>
+      <h1 class="detailBookInfo__title">{fullTitle}</h1> <!-- Title includes category name -->
       <p class="detailBookInfo__desc">{book.description}</p>
      
       <div class="detailBookInfo__cats">
-      <h3 class="detailBookInfo__price">&euro; {book.price}</h3>
-     <button class="detailBookInfo__btn">BUY</button>
-     </div>
+        <h3 class="detailBookInfo__price">&euro; {book.price}</h3>
+        <button class="detailBookInfo__btn">BUY</button>
+      </div>
      
-     <div class="detailBookInfo__author">
+      <div class="detailBookInfo__author">
         {book.authors && book.authors.length > 0 && (
           <h2>{book.authors[0].name}</h2> 
           <p>{book.authors[0].bio}</p>
@@ -64,8 +92,26 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
       </div>
     </div>
   </section>
+
+  <!-- Section for displaying other books in the same category -->
   <section class="otherBooks">
-      
+    <h2>Other Books in the Same Category: {categoryName}</h2> <!-- Display category name in section -->
+    <div class="otherBooks__list">
+      {otherBooks.length > 0 ? (
+        otherBooks.slice(0, 5).map((otherBook) => {
+          const thumbnail_url_Books = otherBook.cover?.url || "/placeholder-image.jpg";
+          return (
+             <Card
+                key={otherBook.documentId}
+                book={otherBook}
+                thumbnailUrl={import.meta.env.STRAPI_URL + thumbnail_url_Books}
+              />
+          );
+        })
+      ) : (
+        <p>No other books available in the same category</p>
+      )}
+    </div>
   </section>
 </Layout>
 
@@ -101,8 +147,7 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
     margin: var(--s2) 0;
   }
 
-  .detailBookInfo__pub
-  {
+  .detailBookInfo__pub {
     margin-top: var(--s1);
   }
 
@@ -133,7 +178,38 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
     cursor: default;
   }
 
-  .detailBookInfo__btn{
+  .detailBookInfo__btn {
     padding: 1rem 2rem;
+  }
+
+  .otherBooks {
+    margin-top: var(--s3);
+  }
+
+  .otherBooks__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .card {
+    width: 200px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #fff;
+  }
+
+  .card__image img {
+    width: 100%;
+    height: auto;
+  }
+
+  .card__content {
+    padding: 10px;
+  }
+
+  .card__price {
+    font-size: 14px;
+    margin: 10px 0;
   }
 </style>
