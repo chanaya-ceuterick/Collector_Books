@@ -33,15 +33,19 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
       <h1 class="detailBookInfo__title">{book.title}</h1>
       <p class="detailBookInfo__desc">{book.description}</p>
      
+      <div class="detailBookInfo__cats">
       <h3 class="detailBookInfo__price">&euro; {book.price}</h3>
-      <div class="detailBookInfo__author">
+     <button class="detailBookInfo__btn">BUY</button>
+     </div>
+     
+     <div class="detailBookInfo__author">
         {book.authors && book.authors.length > 0 && (
           <h2>{book.authors[0].name}</h2> 
           <p>{book.authors[0].bio}</p>
         )}
         <p class="detailBookInfo__pub">Published date: {book.publishedDate}</p>
       </div>
-      
+
       <div class="detailBookInfo__categories">
         <h3>Categories:</h3>
         <div class="detailBookInfo__cats">
@@ -60,6 +64,9 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
       </div>
     </div>
   </section>
+  <section class="otherBooks">
+      
+  </section>
 </Layout>
 
 <style>
@@ -67,6 +74,7 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
     display: flex;
     flex-direction: row;
     gap: var(--s2);
+    margin: 0;
   }
 
   .detailBookInfo__img {
@@ -86,7 +94,6 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
   }
 
   .detailBookInfo__price {
-    margin-top: var(--s2);
     font-size: var(--s15);
   }
 
@@ -112,6 +119,8 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
     display: flex;
     flex-direction: row;
     gap: var(--s1);
+    align-items: center;
+    margin-bottom: var(--s2);
   }
 
   .detailBookInfo__cat {
@@ -122,5 +131,9 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
     border: none;
     border-radius: var(--border-radius);
     cursor: default;
+  }
+
+  .detailBookInfo__btn{
+    padding: 1rem 2rem;
   }
 </style>
