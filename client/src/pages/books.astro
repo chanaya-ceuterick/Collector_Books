@@ -72,7 +72,9 @@ let books = selectedCategory.books;
       </div>
       <div class="card__content">
         <p class="card__price">&euro; ${book.price || "No Price"}</p>
-        <button>Read More</button>
+        <a href="/details/{${book.documentId}"}>
+      <button>Read more</button>
+    </a>
       </div>
     `;
         cardContainer.appendChild(card);

@@ -2,8 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import fetchApi from "../../lib/strapi";
 
-// http://localhost:1337/api/books/?populate=cover&populate[0]=categories
-
+// Fetch book data with Strapi
 export async function getStaticPaths() {
   const bookDetail = await fetchApi({
     endpoint: "books",
@@ -14,17 +13,35 @@ export async function getStaticPaths() {
   const paths = bookDetail.map((book) => ({
     params: { documentId: book.documentId.toString() },
     props: {
-      book,
+      book, // Pass the full book object as a prop
     },
   }));
 
   return paths;
 }
 
+// Access the book prop passed to the component
 const { book } = Astro.props;
+console.log(book);
 ---
 
 <Layout>
-  <h1>{book.title}</h1>
-  
+  <img src="" alt="">
+  <div>
+  <h1 class="bookTitle">{book.title}</h1>
+  <h2 class="bookTitle__subtitle">{book.description}</h2>
+</div>
 </Layout>
+
+<style>
+  .bookTitle {
+    color: var(--c-darkgreen);
+    font-size: var(--s2);
+    padding: var(--s2);
+  }
+
+  .bookTitle__subtitle {
+    font-size: var(--s1);
+    padding: 0 var(--s2);
+  }
+</style>
