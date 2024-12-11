@@ -11,7 +11,7 @@ const { book, thumbnailUrl } = Astro.props;
   </div>
   <div class="card__content">
     <p class="card__price">&euro; {book.price || "No Price"}</p>
-    <a href="/detail ">
+    <a href={`/details/${book.documentId}`}>
       <button>Read more</button>
     </a>
   </div>
