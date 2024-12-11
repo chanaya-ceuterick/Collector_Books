@@ -55,6 +55,10 @@ h2 {
   margin-bottom: var(--s2);
 }
 
+p{
+  color: black;
+}
+
 button {
   background-color: var(--c-green);
   font-size: 12px;

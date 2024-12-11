@@ -7,7 +7,7 @@ export async function getStaticPaths() {
   const bookDetail = await fetchApi({
     endpoint: "books",
     wrappedByKey: "data",
-    query: { populate: ["cover", "categories"] },
+    query: { populate: ["cover", "categories", "authors"] },
   });
 
   const paths = bookDetail.map((book) => ({
@@ -31,8 +31,14 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
     <img src={coverUrl} alt={book.title} class="detailBookInfo__img" />
     <div>
       <h1 class="detailBookInfo__title">{book.title}</h1>
-      <h2 class="detailBookInfo__subtitle">{book.description}</h2>
-      <div>
+      <p class="detailBookInfo__subtitle">{book.description}</p>
+      <div class="detailBookInfo__author">
+        {book.authors && book.authors.length > 0 && (
+          <h2>{book.authors[0].name}</h2> 
+          <p>{book.authors[0].bio}</p>
+        )}
+      </div>
+      <div class="detailBookInfo__categories">
         <h3>Categories:</h3>
         <div class="detailBookInfo__cats">
           {
@@ -66,13 +72,16 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
 
   .detailBookInfo__title {
     color: var(--c-darkgreen);
-    font-size: var(--s2);
+    font-size: var(--s3);
     padding: var(--s2) 0;
   }
 
   .detailBookInfo__subtitle {
-    font-size: var(--s1);
     padding: 0;
+  }
+
+  .detailBookInfo__author{
+    margin: var(--s2) 0;
   }
 
   .detailBookInfo__cats {
