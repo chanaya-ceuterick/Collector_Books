@@ -23,25 +23,40 @@ export async function getStaticPaths() {
 // Access the book prop passed to the component
 const { book } = Astro.props;
 console.log(book);
+const coverUrl = `http://localhost:1337${book.cover?.url}`;
 ---
 
 <Layout>
-  <img src="" alt="">
+  <section class="detailBookInfo">
+  <img src={coverUrl} alt={book.title} class="detailBookInfo__img">
   <div>
-  <h1 class="bookTitle">{book.title}</h1>
-  <h2 class="bookTitle__subtitle">{book.description}</h2>
-</div>
+  <h1 class="detailBookInfo__title">{book.title}</h1>
+  <h2 class="detailBookInfo__subtitle">{book.description}</h2>
+</div></section>
 </Layout>
 
 <style>
-  .bookTitle {
-    color: var(--c-darkgreen);
-    font-size: var(--s2);
-    padding: var(--s2);
+  .detailBookInfo
+  {
+    display: flex;
+    flex-direction: row;
+    gap: var(--s2);
   }
 
-  .bookTitle__subtitle {
+  .detailBookInfo__img
+  {
+    width: 30vw;
+    height: auto;
+  }
+
+  .detailBookInfo__title {
+    color: var(--c-darkgreen);
+    font-size: var(--s2);
+    padding: var(--s2) 0;
+  }
+
+  .detailBookInfo__subtitle {
     font-size: var(--s1);
-    padding: 0 var(--s2);
+    padding: 0;
   }
 </style>
