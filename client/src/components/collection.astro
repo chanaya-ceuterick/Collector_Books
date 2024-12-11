@@ -1,26 +1,35 @@
 ---
-const API_URL = "http://localhost:1337/api/collections?populate=books";
-const IMAGE_BASE_URL = "http://localhost:1337/uploads";
+import fetchApi from "../lib/strapi.js";
+const API_ENDPOINT_BOOKS = "collections";
+const queryParametersBooks = { populate: "image" };
 
-const response = await fetch(API_URL);
-const data = await response.json();
-const collections = data.data;
+// Fetch collection data with image
+const collection = await fetchApi({
+  endpoint: API_ENDPOINT_BOOKS,
+  query: queryParametersBooks,
+  wrappedByKey: "data",
+});
 ---
 
 <div class="card-container">
     {
-        collections.map((collection) => (
-            <div class="card card--col">
-                <div class="card__image">
-                    <img
-                        src={`${IMAGE_BASE_URL}/${collection.slug}.jpg`}
-                        alt={collection.name || "No title"}
-                    />
+        collection.map((col) => {
+            // Dynamically compute the image URL for each collection item
+            const imageUrl = import.meta.env.STRAPI_URL + 
+                (col.image?.formats?.thumbnail?.url || "/placeholder-image.jpg");
+            return (
+                <div class="card card--col" key={col.id}>
+                    <div class="card__image">
+                        <img
+                            src={imageUrl}
+                            alt={col.name || "No title"}
+                        />
+                    </div>
+                    <div class="card_txt">
+                        <h3>{col.name || "No title"}</h3>
+                    </div>
                 </div>
-                <div class="card_txt">
-                    <h3>{collection.name || "No title"}</h3>
-                </div>
-            </div>
-        ))
+            );
+        })
     }
 </div>

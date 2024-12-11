@@ -1,14 +1,10 @@
 ---
-const { book } = Astro.props;
-const IMAGE_BASE_URL = "http://localhost:1337/uploads";
+const { book, thumbnailUrl } = Astro.props;
 ---
 
 <div class="card">
   <div class="card__image">
-    <img
-      src={`${IMAGE_BASE_URL}/${book.slug}.jpg`}
-      alt={book.title || "No title"}
-    />
+    <img src={thumbnailUrl} alt={book.title || "No title"} />
   </div>
   <div class="card_txt">
     <h3>{book.title || "No title"}</h3>
@@ -18,29 +14,3 @@ const IMAGE_BASE_URL = "http://localhost:1337/uploads";
     <button>Read More</button>
   </div>
 </div>
-
-
-<!-- ---
-const { book, imageUrl } = Astro.props;
-const IMAGE_BASE_URL = "http://localhost:1337/uploads";
-if (!book.bestseller) {
-  return null;
-}
----
-
-<div class="card">
-  <div class="card__image">
-    <img
-      src={`${IMAGE_BASE_URL}/${book.slug}.jpg`}
-      alt={book.title || "No title"}
-    />
-  </div>
-  <div class="card_txt">
-    <h3>{book.title || "No title"}</h3>
-  </div>
-  <div class="card__content">
-    <p class="card__price">&euro; {book.price || "No Price"}</p>
-    <button>Read More</button>
-  </div>
-</div> -->
-

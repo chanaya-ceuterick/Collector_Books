@@ -1,18 +1,19 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Card from "../components/Cards.astro";
+// import Card from "../components/Cards.astro";
 import fetchApi from "../lib/strapi";
 
-const API_URL_CAT = "http://localhost:1337/api/categories?populate=books";
 const API_URL = "http://localhost:1337/api/books";
 
-const responseCat = await fetch(API_URL_CAT);
-const dataCat = await responseCat.json();
-const cats = dataCat.data;
+const API_ENDPOINT_CAT = "categories";
+const queryParametersCat = { populate: "books.cover" };
 
-// const responseAll = await fetch(API_URL);
-// const dataAll = await responseAll.json();
-// const all = dataAll.data;
+// Fetch book data with covers
+const cats = await fetchApi({
+  endpoint: API_ENDPOINT_CAT,
+  query: queryParametersCat,
+  wrappedByKey: "data",
+});
 
 // Default category and books initialization
 let selectedCategory = cats[0];
@@ -26,17 +27,14 @@ let books = selectedCategory.books;
     <div class="categories">
       <!-- "All" button to show all books -->
       <button class="categories__catBtn" id="allBtn">All</button>
-      {cats.map((cat) => (
-        <button
-          class="categories__catBtn"
-          data-category-id={cat.documentId}
-        >
-          {cat.name}
-        </button>
-      ))}
+      {
+        cats.map((cat) => (
+          <button class="categories__catBtn" data-category-id={cat.documentId}>
+            {cat.name}
+          </button>
+        ))
+      }
     </div>
-
-    
 
     <div class="card-container" id="card-container">
       <!-- Books will be inserted here by JS -->
@@ -44,67 +42,62 @@ let books = selectedCategory.books;
   </section>
 
   <script type="module" client:load>
-    const API_URL_CAT = "http://localhost:1337/api/categories";
-    const API_URL = "http://localhost:1337/api/books";
+    const API_URL_CAT =
+      "http://localhost:1337/api/categories/?populate=books.cover";
+    const API_URL_BOOKS = "http://localhost:1337/api/books/?populate=cover";
     const cardContainer = document.getElementById("card-container");
 
-    // Fetch and display all books by default when the page loads
-    document.addEventListener("DOMContentLoaded", async () => {
-      const responseAll = await fetch(API_URL);
-      const dataAll = await responseAll.json();
-      const allBooks = dataAll.data || [];
 
-      // Clear the container and render all books
-      renderBooks(allBooks);
-    });
 
-    // Function to render books
+        const responseAll = await fetch(API_URL_BOOKS);
+        const dataAll = await responseAll.json();
+        const allBooks = dataAll.data || [];
+        renderBooks(allBooks);
+      
+
+
     function renderBooks(books) {
-      cardContainer.innerHTML = ""; // Clear existing books
+      cardContainer.innerHTML = "";
       books.forEach((book) => {
+        const thumbnail_url_Books = book.cover?.url || "/placeholder-image.jpg";
+
         const card = document.createElement("div");
         card.classList.add("card");
         card.innerHTML = `
-          <div class="card__image">
-            <img
-              src="http://localhost:1337/uploads/${book.slug}.jpg"
-              alt="${book.title || "No title"}"
-            />
-          </div>
-          <div class="card_txt">
-            <h3>${book.title || "No title"}</h3>
-          </div>
-          <div class="card__content">
-            <p class="card__price">&euro; ${book.price || "No Price"}</p>
-            <button>Read More</button>
-          </div>
-        `;
+      <div class="card__image">
+        <img src="http://localhost:1337${thumbnail_url_Books}" alt="${book.title || "No title"}" />
+      </div>
+      <div class="card_txt">
+        <h3>${book.title || "No title"}</h3>
+      </div>
+      <div class="card__content">
+        <p class="card__price">&euro; ${book.price || "No Price"}</p>
+        <button>Read More</button>
+      </div>
+    `;
         cardContainer.appendChild(card);
       });
     }
 
-    // Now handle category buttons
     const categoryButtons = document.querySelectorAll(".categories__catBtn");
-
     categoryButtons.forEach((button) => {
       button.addEventListener("click", async (event) => {
+        // In your event listener, you are dynamically generating the URL:
         const categoryId = event.target.getAttribute("data-category-id");
-
         if (categoryId) {
-          // Fetch books for the selected category
-          const response = await fetch(`${API_URL_CAT}/${categoryId}?populate=books`);
-          const data = await response.json();
-          const books = data.data.books || [];
-
-          // Render the selected category's books
-          renderBooks(books);
-        } else {
-          // If the "All" button is clicked
-          const responseAll = await fetch(API_URL);
-          const dataAll = await responseAll.json();
-          const allBooks = dataAll.data || [];
-
-          // Render all books again
+          try {
+            const response = await fetch(
+              `http://localhost:1337/api/categories/${categoryId}?populate=books.cover`,
+            );
+            const data = await response.json();
+            const books = data.data.books || [];
+            renderBooks(books);
+          } catch (error) {
+            console.error("Error fetching category books:", error);
+            renderBooks([]);
+          }
+        }
+        else{
           renderBooks(allBooks);
         }
       });
@@ -141,4 +134,3 @@ let books = selectedCategory.books;
     margin-bottom: 10px;
   }
 </style>
-
