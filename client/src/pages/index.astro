@@ -5,20 +5,42 @@ import AuthorMonth from "../components/Author.astro";
 import Collection from "../components/collection.astro";
 import fetchApi from "../lib/strapi.js";
 
-// Use fetchApi to fetch data from Strapi
-const API_ENDPOINT = "books";
-const queryParameters = { populate: "cover" }; // Add query parameters as needed
+// Define API parameters (including cover data for books)
+const API_ENDPOINT_BOOKS = "books";
+const queryParametersBooks = { populate: "cover" };
 
-const data = await fetchApi(
-  { endpoint: API_ENDPOINT, query: queryParameters },
-  { method: "GET" }
-);
-
-const books = data.data;
+// Fetch book data with covers
+const books = await fetchApi({
+  endpoint: API_ENDPOINT_BOOKS,
+  query: queryParametersBooks,
+  wrappedByKey: "data",
+});
 
 // Filter books
-const bestsellerBooks = books.filter((book) => book.bestseller);
-const saleBooks = books.filter((book) => book.sale);
+const bestsellerBooks = books.filter((book) => book.bestseller === true);
+const saleBooks = books.filter((book) => book.sale === true);
+
+// Define API parameters for authors
+const API_ENDPOINT_AUTHORS = "authors";
+const queryParametersAuthor = { populate: "image" };
+
+// Fetch all authors
+const authorsData = await fetchApi({
+  endpoint: API_ENDPOINT_AUTHORS,
+  query: queryParametersAuthor,
+  wrappedByKey: "data",
+});
+
+// Find the "Author of the Month"
+const authorOfTheMonth = authorsData.find(
+  (author) => author.MonthAuthor === true,
+);
+
+// Prepare the author image URL (always pass the image path or placeholder)
+const thumbnailUrlAuthor =
+  import.meta.env.STRAPI_URL +
+  (authorOfTheMonth?.image?.formats?.thumbnail?.url ||
+    "/placeholder-image.jpg");
 ---
 
 <Layout>
@@ -29,20 +51,62 @@ const saleBooks = books.filter((book) => book.sale);
   <section class="bestseller">
     <h2>Bestsellers</h2>
     <div class="card-container">
-      {bestsellerBooks.map((book) => <Card book={book} />)}
+      {
+        bestsellerBooks.length > 0 ? (
+          bestsellerBooks.map((book) => {
+            const thumbnailUrl =
+              book.cover?.formats?.thumbnail?.url || "/placeholder-image.jpg";
+            return (
+              <Card
+                key={book.id}
+                book={book}
+                thumbnailUrl={import.meta.env.STRAPI_URL + thumbnailUrl}
+              />
+            );
+          })
+        ) : (
+          <p>No bestsellers available at the moment.</p>
+        )
+      }
     </div>
     <a href="/books">Show all books</a>
   </section>
 
   <section class="authorOfTheMonth">
     <h2>Author of the Month</h2>
-    <AuthorMonth />
+
+    {
+      authorOfTheMonth ? (
+        <AuthorMonth
+          author={authorOfTheMonth}
+          thumbnailUrl={thumbnailUrlAuthor}
+        />
+      ) : (
+        <p>No author of the month found.</p>
+      )
+    }
   </section>
 
   <section class="onSale">
     <h2>On Sale</h2>
     <div class="card-container">
-      {saleBooks.map((book) => <Card book={book} />)}
+      {
+        saleBooks.length > 0 ? (
+          saleBooks.map((book) => {
+            const thumbnailUrl =
+              book.cover?.formats?.thumbnail?.url || "/placeholder-image.jpg";
+            return (
+              <Card
+                key={book.id}
+                book={book}
+                thumbnailUrl={import.meta.env.STRAPI_URL + thumbnailUrl}
+              />
+            );
+          })
+        ) : (
+          <p>No books on sale at the moment.</p>
+        )
+      }
     </div>
   </section>
 
@@ -51,6 +115,3 @@ const saleBooks = books.filter((book) => book.sale);
     <Collection />
   </section>
 </Layout>
-
-
-
