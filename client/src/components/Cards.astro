@@ -1,46 +1,41 @@
 ---
-const { book } = Astro.props;
-const IMAGE_BASE_URL = "http://localhost:1337/uploads";
+import fetchApi from "../lib/strapi.js";
+
+// Define API parameters
+const API_ENDPOINT = "books";
+const queryParameters = { populate: "cover" };
+
+// Fetch data
+const data = await fetchApi(
+  { endpoint: API_ENDPOINT, query: queryParameters },
+  { method: "GET" }
+);
+
+const books = data.data;
+
 ---
 
-<div class="card">
-  <div class="card__image">
-    <img
-      src={`${IMAGE_BASE_URL}/${book.slug}.jpg`}
-      alt={book.title || "No title"}
-    />
-  </div>
-  <div class="card_txt">
-    <h3>{book.title || "No title"}</h3>
-  </div>
-  <div class="card__content">
-    <p class="card__price">&euro; {book.price || "No Price"}</p>
-    <button>Read More</button>
-  </div>
-</div>
+{books.map((book) => {
+  const thumbnailUrl = book.cover?.formats?.thumbnail?.url || "/placeholder-image.jpg";
+  console.log(thumbnailUrl); // Log the URL to see what it resolves to
 
+  return (
+    <div class="card" key={book.id}>
+      <div class="card__image">
+        <img
+          src={import.meta.env.STRAPI_URL + thumbnailUrl}  
+          alt={book.title || "No title"}
+        />
+      </div>
+      <div class="card_txt">
+        <h3>{book.title || "No title"}</h3>
+      </div>
+      <div class="card__content">
+        <p class="card__price">&euro; {book.price || "No Price"}</p>
+        <button>Read More</button>
+      </div>
+    </div>
+  );
+})}
 
-<!-- ---
-const { book, imageUrl } = Astro.props;
-const IMAGE_BASE_URL = "http://localhost:1337/uploads";
-if (!book.bestseller) {
-  return null;
-}
----
-
-<div class="card">
-  <div class="card__image">
-    <img
-      src={`${IMAGE_BASE_URL}/${book.slug}.jpg`}
-      alt={book.title || "No title"}
-    />
-  </div>
-  <div class="card_txt">
-    <h3>{book.title || "No title"}</h3>
-  </div>
-  <div class="card__content">
-    <p class="card__price">&euro; {book.price || "No Price"}</p>
-    <button>Read More</button>
-  </div>
-</div> -->
 
