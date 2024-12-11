@@ -39,7 +39,7 @@ const authorOfTheMonth = authorsData.find(
 // Prepare the author image URL (always pass the image path or placeholder)
 const thumbnailUrlAuthor =
   import.meta.env.STRAPI_URL +
-  (authorOfTheMonth?.image?.formats?.thumbnail?.url ||
+  (authorOfTheMonth?.image?.url ||
     "/placeholder-image.jpg");
 ---
 
@@ -55,7 +55,7 @@ const thumbnailUrlAuthor =
         bestsellerBooks.length > 0 ? (
           bestsellerBooks.map((book) => {
             const thumbnailUrl =
-              book.cover?.formats?.thumbnail?.url || "/placeholder-image.jpg";
+              book.cover?.url || "/placeholder-image.jpg";
             return (
               <Card
                 key={book.id}
@@ -94,7 +94,7 @@ const thumbnailUrlAuthor =
         saleBooks.length > 0 ? (
           saleBooks.map((book) => {
             const thumbnailUrl =
-              book.cover?.formats?.thumbnail?.url || "/placeholder-image.jpg";
+              book.cover?.url || "/placeholder-image.jpg";
             return (
               <Card
                 key={book.id}
