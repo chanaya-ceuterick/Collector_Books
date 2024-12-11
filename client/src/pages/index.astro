@@ -3,15 +3,20 @@ import Layout from "../layouts/Layout.astro";
 import Card from "../components/Cards.astro";
 import AuthorMonth from "../components/Author.astro";
 import Collection from "../components/collection.astro";
+import fetchApi from "../lib/strapi.js";
 
+// Use fetchApi to fetch data from Strapi
+const API_ENDPOINT = "books";
+const queryParameters = { populate: "cover" }; // Add query parameters as needed
 
-const API_URL = "http://localhost:1337/api/books";
+const data = await fetchApi(
+  { endpoint: API_ENDPOINT, query: queryParameters },
+  { method: "GET" }
+);
 
-const response = await fetch(API_URL);
-const data = await response.json();
 const books = data.data;
 
-// Filteren van boeken
+// Filter books
 const bestsellerBooks = books.filter((book) => book.bestseller);
 const saleBooks = books.filter((book) => book.sale);
 ---
@@ -46,5 +51,6 @@ const saleBooks = books.filter((book) => book.sale);
     <Collection />
   </section>
 </Layout>
+
 
 
