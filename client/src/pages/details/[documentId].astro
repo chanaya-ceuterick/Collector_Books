@@ -28,24 +28,39 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
 
 <Layout>
   <section class="detailBookInfo">
-  <img src={coverUrl} alt={book.title} class="detailBookInfo__img">
-  <div>
-  <h1 class="detailBookInfo__title">{book.title}</h1>
-  <h2 class="detailBookInfo__subtitle">{book.description}</h2>
-</div></section>
+    <img src={coverUrl} alt={book.title} class="detailBookInfo__img" />
+    <div>
+      <h1 class="detailBookInfo__title">{book.title}</h1>
+      <h2 class="detailBookInfo__subtitle">{book.description}</h2>
+      <div>
+        <h3>Categories:</h3>
+        <div class="detailBookInfo__cats">
+          {
+            book.categories && book.categories.length > 0 ? (
+              book.categories.map((category) => (
+                <p class="detailBookInfo__cat" key={category.id}>
+                  {category.name}
+                </p> 
+              ))
+            ) : (
+              <p>No categories available</p> 
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </section>
 </Layout>
 
 <style>
-  .detailBookInfo
-  {
+  .detailBookInfo {
     display: flex;
     flex-direction: row;
     gap: var(--s2);
   }
 
-  .detailBookInfo__img
-  {
-    width: 30vw;
+  .detailBookInfo__img {
+    width: 25vw;
     height: auto;
   }
 
@@ -58,5 +73,29 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
   .detailBookInfo__subtitle {
     font-size: var(--s1);
     padding: 0;
+  }
+
+  .detailBookInfo__cats {
+    margin-top: var(--s2);
+  }
+
+  .detailBookInfo__cats p {
+    font-size: var(--s1);
+    padding: var(--s05);
+  }
+
+  .detailBookInfo__cats {
+    display: flex;
+    flex-direction: row;
+    gap: var(--s1);
+  }
+  .detailBookInfo__cat {
+    background-color: grey;
+    color: white;
+    font-size: 12px;
+    padding: var(--s2) var(--s1);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: default;
   }
 </style>
