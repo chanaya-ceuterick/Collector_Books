@@ -31,13 +31,17 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
     <img src={coverUrl} alt={book.title} class="detailBookInfo__img" />
     <div>
       <h1 class="detailBookInfo__title">{book.title}</h1>
-      <p class="detailBookInfo__subtitle">{book.description}</p>
+      <p class="detailBookInfo__desc">{book.description}</p>
+     
+      <h3 class="detailBookInfo__price">&euro; {book.price}</h3>
       <div class="detailBookInfo__author">
         {book.authors && book.authors.length > 0 && (
           <h2>{book.authors[0].name}</h2> 
           <p>{book.authors[0].bio}</p>
         )}
+        <p class="detailBookInfo__pub">Published date: {book.publishedDate}</p>
       </div>
+      
       <div class="detailBookInfo__categories">
         <h3>Categories:</h3>
         <div class="detailBookInfo__cats">
@@ -68,6 +72,7 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
   .detailBookInfo__img {
     width: 25vw;
     height: auto;
+    object-fit: cover;
   }
 
   .detailBookInfo__title {
@@ -76,12 +81,22 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
     padding: var(--s2) 0;
   }
 
-  .detailBookInfo__subtitle {
+  .detailBookInfo__desc {
     padding: 0;
+  }
+
+  .detailBookInfo__price {
+    margin-top: var(--s2);
+    font-size: var(--s15);
   }
 
   .detailBookInfo__author{
     margin: var(--s2) 0;
+  }
+
+  .detailBookInfo__pub
+  {
+    margin-top: var(--s1);
   }
 
   .detailBookInfo__cats {
@@ -98,6 +113,7 @@ const coverUrl = `http://localhost:1337${book.cover?.url}`;
     flex-direction: row;
     gap: var(--s1);
   }
+
   .detailBookInfo__cat {
     background-color: grey;
     color: white;
