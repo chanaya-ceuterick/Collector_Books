@@ -47,14 +47,10 @@ let books = selectedCategory.books;
     const API_URL_BOOKS = "http://localhost:1337/api/books/?populate=cover";
     const cardContainer = document.getElementById("card-container");
 
-
-
-        const responseAll = await fetch(API_URL_BOOKS);
-        const dataAll = await responseAll.json();
-        const allBooks = dataAll.data || [];
-        renderBooks(allBooks);
-      
-
+    const responseAll = await fetch(API_URL_BOOKS);
+    const dataAll = await responseAll.json();
+    const allBooks = dataAll.data || [];
+    renderBooks(allBooks);
 
     function renderBooks(books) {
       cardContainer.innerHTML = "";
@@ -72,7 +68,9 @@ let books = selectedCategory.books;
       </div>
       <div class="card__content">
         <p class="card__price">&euro; ${book.price || "No Price"}</p>
-        <button>Read More</button>
+        <a href="/details/${book.documentId}">
+          <button>Read more</button>
+        </a>
       </div>
     `;
         cardContainer.appendChild(card);
@@ -96,8 +94,7 @@ let books = selectedCategory.books;
             console.error("Error fetching category books:", error);
             renderBooks([]);
           }
-        }
-        else{
+        } else {
           renderBooks(allBooks);
         }
       });
