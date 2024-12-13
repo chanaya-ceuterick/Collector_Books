@@ -124,6 +124,10 @@ button:hover {
   background-color: white;
 }
 
+.card__content button {
+  padding: var(--s1) 4.5rem;
+}
+
 .card_txt h3 {
   margin: auto;
   width: 90%;

@@ -386,6 +386,7 @@ export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    favouriteAuthor: Schema.Attribute.Boolean;
     image: Schema.Attribute.Media<'images' | 'files'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -393,7 +394,6 @@ export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
       'api::author.author'
     > &
       Schema.Attribute.Private;
-    MonthAuthor: Schema.Attribute.Boolean;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'name'>;
@@ -416,7 +416,6 @@ export interface ApiBookBook extends Struct.CollectionTypeSchema {
   };
   attributes: {
     authors: Schema.Attribute.Relation<'manyToMany', 'api::author.author'>;
-    bestseller: Schema.Attribute.Boolean;
     categories: Schema.Attribute.Relation<
       'manyToMany',
       'api::category.category'
@@ -429,7 +428,7 @@ export interface ApiBookBook extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::book.book'> &
       Schema.Attribute.Private;
-    price: Schema.Attribute.Decimal;
+    popular: Schema.Attribute.Boolean;
     publishedAt: Schema.Attribute.DateTime;
     publishedDate: Schema.Attribute.Date & Schema.Attribute.Required;
     sale: Schema.Attribute.Boolean;

@@ -49,11 +49,8 @@
       "target": "api::category.category",
       "inversedBy": "books"
     },
-    "bestseller": {
+    "popular": {
       "type": "boolean"
-    },
-    "price": {
-      "type": "decimal"
     },
     "sale": {
       "type": "boolean"

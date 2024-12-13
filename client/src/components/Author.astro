@@ -1,4 +1,5 @@
 ---
+import { Image, Picture } from "astro:assets";
 const { author, thumbnailUrl } = Astro.props;
 ---
 
@@ -6,10 +7,15 @@ const { author, thumbnailUrl } = Astro.props;
   (
     <div class="authorOfTheMonth">
       <div>
-        <img
+        <Image
           src={thumbnailUrl}
           alt={author.name || "No title"}
+          width="300"
+          height="400"
           class="authorOfTheMonth__image"
+          widths={[250, 350, 500, 750]}
+          format="avif"
+          sizes="(min-width: 2960px) calc(12.5vw - 118px), (min-width: 2600px) calc(5vw + 121px), (min-width: 2240px) calc(5.29vw + 131px), (min-width: 1900px) calc(5vw + 157px), (min-width: 1540px) calc(4.71vw + 180px), (min-width: 1160px) calc(3.33vw + 217px), (min-width: 1120px) calc(325vw - 3455px), (min-width: 760px) calc(3.53vw + 229px), (min-width: 540px) calc(42vw - 43px), calc(8.18vw + 225px)"
         />
       </div>
       <div class="author-content">
@@ -18,7 +24,7 @@ const { author, thumbnailUrl } = Astro.props;
           <p>{author.bio || "No bio available"}</p>
         </div>
         <a href={`/books?author=${author.documentId}`}>
-        <button class="read-more read-more__margin">Read More</button>
+          <button class="read-more read-more__margin">Read More</button>
         </a>
       </div>
     </div>
@@ -39,7 +45,7 @@ const { author, thumbnailUrl } = Astro.props;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
 
-  .read-more__margin{
+  .read-more__margin {
     margin-top: var(--s2);
   }
 </style>
