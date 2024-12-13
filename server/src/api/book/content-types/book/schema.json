@@ -51,6 +51,12 @@
     },
     "bestseller": {
       "type": "boolean"
+    },
+    "price": {
+      "type": "decimal"
+    },
+    "sale": {
+      "type": "boolean"
     }
   }
 }

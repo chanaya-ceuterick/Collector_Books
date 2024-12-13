@@ -1,0 +1,45 @@
+---
+const { author, thumbnailUrl } = Astro.props;
+---
+
+{
+  (
+    <div class="authorOfTheMonth">
+      <div>
+        <img
+          src={thumbnailUrl}
+          alt={author.name || "No title"}
+          class="authorOfTheMonth__image"
+        />
+      </div>
+      <div class="author-content">
+        <div class="text">
+          <h2>{author.name || "Unknown Author"}</h2>
+          <p>{author.bio || "No bio available"}</p>
+        </div>
+        <a href={`/books?author=${author.documentId}`}>
+        <button class="read-more read-more__margin">Read More</button>
+        </a>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .authorOfTheMonth {
+    display: flex;
+    gap: var(--s2);
+  }
+  .authorOfTheMonth__image {
+    width: 30rem;
+    height: 20rem;
+    object-fit: cover;
+    object-position: center -2rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .read-more__margin{
+    margin-top: var(--s2);
+  }
+</style>

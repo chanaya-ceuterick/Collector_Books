@@ -1,0 +1,35 @@
+---
+import fetchApi from "../lib/strapi.js";
+const API_ENDPOINT_BOOKS = "collections";
+const queryParametersBooks = { populate: "image" };
+
+// Fetch collection data with image
+const collection = await fetchApi({
+  endpoint: API_ENDPOINT_BOOKS,
+  query: queryParametersBooks,
+  wrappedByKey: "data",
+});
+---
+
+<div class="card-container">
+    {
+        collection.map((col) => {
+            // Dynamically compute the image URL for each collection item
+            const imageUrl = import.meta.env.STRAPI_URL + 
+                (col.image?.formats?.thumbnail?.url || "/placeholder-image.jpg");
+            return (
+                <div class="card card--col" key={col.id}>
+                    <div class="card__image">
+                        <img
+                            src={imageUrl}
+                            alt={col.name || "No title"}
+                        />
+                    </div>
+                    <div class="card_txt">
+                        <h3>{col.name || "No title"}</h3>
+                    </div>
+                </div>
+            );
+        })
+    }
+</div>

@@ -29,6 +29,17 @@
       "relation": "manyToMany",
       "target": "api::book.book",
       "mappedBy": "authors"
+    },
+    "MonthAuthor": {
+      "type": "boolean"
+    },
+    "image": {
+      "allowedTypes": [
+        "images",
+        "files"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }
