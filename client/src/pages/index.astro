@@ -79,18 +79,22 @@ const thumbnailUrlAuthor =
 
   <section class="authorOfTheMonth">
     <h2>Author of the Month</h2>
-
+  
     {
       authorOfTheMonth ? (
-        <AuthorMonth
-          author={authorOfTheMonth}
-          thumbnailUrl={thumbnailUrlAuthor}
-        />
+        <div>
+          <AuthorMonth
+            author={authorOfTheMonth}
+            thumbnailUrl={thumbnailUrlAuthor}
+          />
+         
+        </div>
       ) : (
         <p>No author of the month found.</p>
       )
     }
   </section>
+  
 
   <section class="onSale">
     <h2>On Sale</h2>

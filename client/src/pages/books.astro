@@ -68,6 +68,9 @@ let books = selectedCategory.books;
 
     const cardContainer = document.getElementById("card-container");
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const authorIdFromQuery = urlParams.get("author"); // Get the author ID from the URL query
+
     const responseAll = await fetch(API_URL_BOOKS);
     const dataAll = await responseAll.json();
     const allBooks = dataAll.data || [];
@@ -101,64 +104,72 @@ let books = selectedCategory.books;
     const categoryButtons = document.querySelectorAll(".categories__catBtn");
     const authorButtons = document.querySelectorAll(".authors__authorBtn");
 
-    // Utility function to handle active state across both groups
     function setActiveButton(clickedButton) {
-      // Remove active state from all buttons in both rows
       categoryButtons.forEach((button) => button.classList.remove("active"));
       authorButtons.forEach((button) => button.classList.remove("active"));
 
-      // Add active state to the clicked button
-      clickedButton.classList.add("active");
+      clickedButton?.classList.add("active");
     }
 
-    // Handle category filter with active state
+    // Filter books by authorId if present in the URL
+    if (authorIdFromQuery) {
+      const authorButton = document.querySelector(
+        `.authors__authorBtn[data-author-id="${authorIdFromQuery}"]`
+      );
+
+      // Set the active state and fetch the corresponding books
+      if (authorButton) {
+        setActiveButton(authorButton);
+        const authorId = authorButton.getAttribute("data-author-id");
+        fetchAndRenderBooksByAuthor(authorId);
+      }
+    }
+
+    // Handle category and author buttons
     categoryButtons.forEach((button) => {
       button.addEventListener("click", async (event) => {
         const categoryId = event.target.getAttribute("data-category-id");
-        setActiveButton(event.target); // Update active state
+        setActiveButton(event.target);
 
         if (categoryId) {
-          try {
-            const response = await fetch(
-              `http://localhost:1337/api/categories/${categoryId}?populate=books.cover`
-            );
-            const data = await response.json();
-            const books = data.data.books || [];
-            renderBooks(books);
-          } catch (error) {
-            console.error("Error fetching category books:", error);
-            renderBooks([]);
-          }
+          const response = await fetch(
+            `http://localhost:1337/api/categories/${categoryId}?populate=books.cover`
+          );
+          const data = await response.json();
+          renderBooks(data.data.books || []);
         } else {
           renderBooks(allBooks);
         }
       });
     });
 
-    // Handle author filter with active state
     authorButtons.forEach((button) => {
       button.addEventListener("click", async (event) => {
         const authorId = event.target.getAttribute("data-author-id");
-        setActiveButton(event.target); // Update active state
+        setActiveButton(event.target);
 
         if (authorId) {
-          try {
-            const response = await fetch(
-              `http://localhost:1337/api/authors/${authorId}?populate=books.cover`
-            );
-            const data = await response.json();
-            const books = data.data.books || [];
-            renderBooks(books);
-          } catch (error) {
-            console.error("Error fetching author books:", error);
-            renderBooks([]);
-          }
+          fetchAndRenderBooksByAuthor(authorId);
         } else {
           renderBooks(allBooks);
         }
       });
     });
+
+    async function fetchAndRenderBooksByAuthor(authorId) {
+      try {
+        const response = await fetch(
+          `http://localhost:1337/api/authors/${authorId}?populate=books.cover`
+        );
+        const data = await response.json();
+        renderBooks(data.data.books || []);
+      } catch (error) {
+        console.error("Error fetching author books:", error);
+        renderBooks([]);
+      }
+    }
 </script>
+
 
 
 </Layout>
