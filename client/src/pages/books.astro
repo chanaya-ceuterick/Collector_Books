@@ -29,7 +29,7 @@ const books = await fetchApi({
 
     <!-- Categories Section with checkboxes -->
     <h3>Categories</h3>
-    <ul>
+    <ul class="filterTitle">
       {categories.map((category) => (
         <li>
           <label>
@@ -48,7 +48,7 @@ const books = await fetchApi({
 
     <!-- Authors Section with checkboxes -->
     <h3>Authors</h3>
-    <ul>
+    <ul class="filterTitle">
       {authors.map((author) => (
         <li>
           <label>
@@ -156,11 +156,12 @@ const books = await fetchApi({
 </script>
 
 <style>
-  ul {
+  .filterTitle {
     display: flex;
     gap: 1rem;
     margin-bottom: 1rem;
     justify-content: center;
+    margin-top: var(--s2);
   }
 
   input {
@@ -168,24 +169,23 @@ const books = await fetchApi({
   }
 
   label {
-    padding: 0.5rem 1rem;
-    background-color: #e0e0e0;
+    padding:var(--s05) var(--s1);
+    background-color: var(--c-green);
     border-radius: 4px;
   }
 
   label:hover {
-    background-color: #333;
+    background-color: var(--c-darkgreen);
     color: white;
   }
 
   label:has(input:checked) {
-    background-color: #333;
+    background-color: var(--c-darkgreen);
     color: white;
   }
 
   .book-card {
-    padding: 1rem;
-    border: 1px solid #ddd;
+    margin-top: var(--s2);
   }
 
   .hidden {
@@ -195,6 +195,6 @@ const books = await fetchApi({
   .card-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-    gap: 1.5rem;
+    gap: var(--s15);
   }
 </style>
