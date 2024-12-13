@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import Card from "../../components/Cards.astro";
 import fetchApi from "../../lib/strapi";
+import Collection from "../../components/collection.astro";
 
 // Fetch book data with Strapi
 export async function getStaticPaths() {
@@ -21,12 +22,41 @@ export async function getStaticPaths() {
   return paths;
 }
 
+// Define API parameters (including cover data for books)
+const API_ENDPOINT_COL = "collections";
+const queryParametersBooks = { populate: ["image", "books"] };
+
+// Fetch collection data with books
+const cols = await fetchApi({
+  endpoint: API_ENDPOINT_COL,
+  query: queryParametersBooks,
+  wrappedByKey: "data",
+});
+
 // Access the book prop passed to the component
 const { book } = Astro.props;
 const coverUrl = `http://localhost:1337${book.cover?.url}`;
 
 // Initialize otherBooks as an empty array
 let otherBooks = [];
+let isInCollection = false;
+let collectionName = "";
+let collectionImg = "";
+let collectionDes = "";
+
+// Check if the book is part of a collection
+cols.forEach((collection) => {
+  if (
+    collection.books.some(
+      (collectionBook) => collectionBook.documentId === book.documentId,
+    )
+  ) {
+    isInCollection = true;
+    collectionName = collection.name;
+    collectionDes = collection.description;
+    collectionImg = collection.image.url;
+  }
+});
 
 // Fetch books from the same category, only if the book has categories
 if (book.categories && book.categories.length > 0) {
@@ -34,7 +64,9 @@ if (book.categories && book.categories.length > 0) {
     const categoryId = book.categories[0].documentId; // Use the first category's ID
 
     // Fetch the category data from Strapi
-    const response = await fetch(`http://localhost:1337/api/categories/${categoryId}?populate=books.cover`);
+    const response = await fetch(
+      `http://localhost:1337/api/categories/${categoryId}?populate=books.cover`,
+    );
     const categoryData = await response.json();
 
     // Check if the category data contains books
@@ -42,7 +74,9 @@ if (book.categories && book.categories.length > 0) {
       otherBooks = categoryData.data.books || []; // Get books from the same category
 
       // Filter out the current book from the list of other books
-      otherBooks = otherBooks.filter((otherBook) => otherBook.documentId !== book.documentId);
+      otherBooks = otherBooks.filter(
+        (otherBook) => otherBook.documentId !== book.documentId,
+      );
     }
   } catch (error) {
     console.error("Error fetching books for the same category:", error);
@@ -50,7 +84,10 @@ if (book.categories && book.categories.length > 0) {
 }
 
 // Combine book title with category name
-const categoryName = book.categories && book.categories.length > 0 ? book.categories[0].name : "Unknown Category";
+const categoryName =
+  book.categories && book.categories.length > 0
+    ? book.categories[0].name
+    : "Unknown Category";
 const fullTitle = `${book.title} - ${categoryName}`;
 ---
 
@@ -58,19 +95,24 @@ const fullTitle = `${book.title} - ${categoryName}`;
   <section class="detailBookInfo">
     <img src={coverUrl} alt={book.title} class="detailBookInfo__img" />
     <div>
-      <h1 class="detailBookInfo__title">{fullTitle}</h1> <!-- Title includes category name -->
+      <h1 class="detailBookInfo__title">{fullTitle}</h1>
+      <!-- Title includes category name -->
       <p class="detailBookInfo__desc">{book.description}</p>
-     
+
       <div class="detailBookInfo__cats">
         <h3 class="detailBookInfo__price">&euro; {book.price}</h3>
         <button class="detailBookInfo__btn">BUY</button>
       </div>
-     
+
       <div class="detailBookInfo__author">
-        {book.authors && book.authors.length > 0 && (
-          <h2>{book.authors[0].name}</h2> 
-          <p>{book.authors[0].bio}</p>
-        )}
+        {
+          book.authors && book.authors.length > 0 && (
+            <>
+              <h2>{book.authors[0].name}</h2>
+              <p>{book.authors[0].bio}</p>
+            </>
+          )
+        }
         <p class="detailBookInfo__pub">Published date: {book.publishedDate}</p>
       </div>
 
@@ -82,10 +124,10 @@ const fullTitle = `${book.title} - ${categoryName}`;
               book.categories.map((category) => (
                 <p class="detailBookInfo__cat" key={category.id}>
                   {category.name}
-                </p> 
+                </p>
               ))
             ) : (
-              <p>No categories available</p> 
+              <p>No categories available</p>
             )
           }
         </div>
@@ -93,24 +135,44 @@ const fullTitle = `${book.title} - ${categoryName}`;
     </div>
   </section>
 
+  <!-- Check if the book is part of a collection and display it -->
+  {
+    isInCollection && (
+      <section class="hasCollection">
+        <h2>{collectionName} collection</h2>
+        <div class="hasCollection__flex">
+          <img
+            src={import.meta.env.STRAPI_URL + collectionImg}
+            alt={collectionName}
+          />
+          <p>{collectionDes}</p>
+        </div>
+      </section>
+    )
+  }
+
   <!-- Section for displaying other books in the same category -->
   <section class="otherBooks">
-    <h2>Other Books in the Same Category: {categoryName}</h2> <!-- Display category name in section -->
+    <h2>Other Books in the Same Category: {categoryName}</h2>
+    <!-- Display category name in section -->
     <div class="otherBooks__list">
-      {otherBooks.length > 0 ? (
-        otherBooks.slice(0, 5).map((otherBook) => {
-          const thumbnail_url_Books = otherBook.cover?.url || "/placeholder-image.jpg";
-          return (
-             <Card
+      {
+        otherBooks.length > 0 ? (
+          otherBooks.slice(0, 5).map((otherBook) => {
+            const thumbnail_url_Books =
+              otherBook.cover?.url || "/placeholder-image.jpg";
+            return (
+              <Card
                 key={otherBook.documentId}
                 book={otherBook}
                 thumbnailUrl={import.meta.env.STRAPI_URL + thumbnail_url_Books}
               />
-          );
-        })
-      ) : (
-        <p>No other books available in the same category</p>
-      )}
+            );
+          })
+        ) : (
+          <p>No other books available in the same category</p>
+        )
+      }
     </div>
   </section>
 </Layout>
@@ -143,7 +205,7 @@ const fullTitle = `${book.title} - ${categoryName}`;
     font-size: var(--s15);
   }
 
-  .detailBookInfo__author{
+  .detailBookInfo__author {
     margin: var(--s2) 0;
   }
 
@@ -182,7 +244,20 @@ const fullTitle = `${book.title} - ${categoryName}`;
     padding: 1rem 2rem;
   }
 
-  
+  .hasCollection {
+    margin-top: var(--s3);
+  }
+
+  .hasCollection__flex
+  {
+    display: flex;
+    gap: var(--s2);
+  }
+  .hasCollection__flex img
+  {
+  width: 30%;
+  height: auto;
+  }
 
   .otherBooks {
     margin-top: var(--s3);
@@ -193,5 +268,4 @@ const fullTitle = `${book.title} - ${categoryName}`;
     flex-wrap: wrap;
     gap: 1rem;
   }
-
 </style>
