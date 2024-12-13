@@ -105,7 +105,7 @@ button:hover {
 
 .card__image {
   background-color: var(--c-lightgrey);
-  height: 160px;
+  height: 20rem;
   display: flex;
   justify-content: center;
   align-items: center;

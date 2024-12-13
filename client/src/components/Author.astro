@@ -23,9 +23,6 @@ const { author, thumbnailUrl } = Astro.props;
           <h2>{author.name || "Unknown Author"}</h2>
           <p>{author.bio || "No bio available"}</p>
         </div>
-        <a href={`/books?author=${author.documentId}`}>
-          <button class="read-more read-more__margin">Read More</button>
-        </a>
       </div>
     </div>
   )
