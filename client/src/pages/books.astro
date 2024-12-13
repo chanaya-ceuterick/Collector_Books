@@ -1,60 +1,44 @@
 ---
-import { Image, Picture } from "astro:assets";
-import Layout from "../layouts/Layout.astro";
-import fetchApi from "../lib/strapi";
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import fetchApi from '../lib/strapi';
 
-const API_URL = "http://localhost:1337/api/books";
 
-const API_ENDPOINT_CAT = "categories";
-const API_ENDPOINT_AUTHORS = "authors";
-const queryParametersCat = { populate: "books.cover" };
-const queryParametersAuthors = { populate: "books.cover" };
-
-// Fetch category and author data
+// Fetch categories and authors
 const cats = await fetchApi({
-  endpoint: API_ENDPOINT_CAT,
-  query: queryParametersCat,
-  wrappedByKey: "data",
-});
-const authors = await fetchApi({
-  endpoint: API_ENDPOINT_AUTHORS,
-  query: queryParametersAuthors,
-  wrappedByKey: "data",
+  endpoint: 'categories',
+  query: { populate: 'books.cover' },
+  wrappedByKey: 'data',
 });
 
-// Default category and books initialization
-let selectedCategory = cats[0];
-let books = selectedCategory.books;
+const authors = await fetchApi({
+  endpoint: 'authors',
+  query: { populate: 'books.cover' },
+  wrappedByKey: 'data',
+});
 ---
 
 <Layout>
   <section>
     <h2>Books</h2>
-
-    <!-- Categories Section -->
     <button class="categories__catBtn" id="allCategoriesBtn">All</button>
-    
+
     <h3>Categories</h3>
     <div class="categories">
-      {
-        cats.map((cat) => (
-          <button class="categories__catBtn" data-category-id={cat.documentId}>
-            {cat.name}
-          </button>
-        ))
-      }
+      {cats.map((cat) => (
+        <button class="categories__catBtn" data-category-id={cat.documentId}>
+          {cat.name}
+        </button>
+      ))}
     </div>
 
-    <!-- Authors Section -->
     <h3>Authors</h3>
     <div class="authors">
-      {
-        authors.map((author) => (
-          <button class="authors__authorBtn" data-author-id={author.documentId}>
-            {author.name}
-          </button>
-        ))
-      }
+      {authors.map((author) => (
+        <button class="authors__authorBtn" data-author-id={author.documentId}>
+          {author.name}
+        </button>
+      ))}
     </div>
 
     <div class="card-container" id="card-container">
@@ -63,14 +47,11 @@ let books = selectedCategory.books;
   </section>
 
   <script type="module" client:load>
-    const API_URL_BOOKS = "http://localhost:1337/api/books/?populate=cover";
-    const API_URL_CAT = "http://localhost:1337/api/categories/?populate=books.cover";
-    const API_URL_AUTHORS = "http://localhost:1337/api/authors/?populate=books.cover";
+const API_URL_BOOKS = `http://localhost:1337/api/books/?populate=cover`;
 
     const cardContainer = document.getElementById("card-container");
-
     const urlParams = new URLSearchParams(window.location.search);
-    const authorIdFromQuery = urlParams.get("author"); // Get the author ID from the URL query
+    const authorIdFromQuery = urlParams.get("author");
 
     const responseAll = await fetch(API_URL_BOOKS);
     const dataAll = await responseAll.json();
@@ -80,32 +61,30 @@ let books = selectedCategory.books;
     function renderBooks(books) {
       cardContainer.innerHTML = "";
       books.forEach((book) => {
-        const thumbnail_url_Books = book.cover?.url || "/placeholder-image.jpg";
-
+        const thumbnail_url_Books = `http://localhost:1337/${book.cover?.url || '/placeholder-image.jpg'}`;
         const card = document.createElement("div");
         card.classList.add("card");
         card.innerHTML = `
-      <div class="card__image">
-          <Image
-    src="http://localhost:1337${thumbnail_url_Books}"
-    alt="${book.title || "No title"}"
-    width="300"
-    height="400"
-    widths={[250, 350, 500, 750]}
-    format="avif"
-    sizes="(min-width: 2960px) calc(12.5vw - 118px), (min-width: 2600px) calc(5vw + 121px), (min-width: 2240px) calc(5.29vw + 131px), (min-width: 1900px) calc(5vw + 157px), (min-width: 1540px) calc(4.71vw + 180px), (min-width: 1160px) calc(3.33vw + 217px), (min-width: 1120px) calc(325vw - 3455px), (min-width: 760px) calc(3.53vw + 229px), (min-width: 540px) calc(42vw - 43px), calc(8.18vw + 225px)"
-  />
-      </div>
-      <div class="card_txt">
-        <h3>${book.title || "No title"}</h3>
-      </div>
-      <div class="card__content">
-        <a href="/details/${book.documentId}">
-          <button>Read more</button>
-        </a>
-      </div>
-
-    `;
+          <div class="card__image">
+            <Image
+              src="${thumbnail_url_Books}"
+              alt="${book.title || "No title"}"
+              width="300"
+              height="400"
+              widths={[250, 350, 500, 750]}
+              format="avif"
+              sizes="(min-width: 2960px) calc(12.5vw - 118px), (min-width: 2600px) calc(5vw + 121px), (min-width: 2240px) calc(5.29vw + 131px), (min-width: 1900px) calc(5vw + 157px), (min-width: 1540px) calc(4.71vw + 180px), (min-width: 1160px) calc(3.33vw + 217px), (min-width: 1120px) calc(325vw - 3455px), (min-width: 760px) calc(3.53vw + 229px), (min-width: 540px) calc(42vw - 43px), calc(8.18vw + 225px)"
+            />
+          </div>
+          <div class="card_txt">
+            <h3>${book.title || "No title"}</h3>
+          </div>
+          <div class="card__content">
+            <a href="/details/${book.documentId}">
+              <button>Read more</button>
+            </a>
+          </div>
+        `;
         cardContainer.appendChild(card);
       });
     }
@@ -116,7 +95,6 @@ let books = selectedCategory.books;
     function setActiveButton(clickedButton) {
       categoryButtons.forEach((button) => button.classList.remove("active"));
       authorButtons.forEach((button) => button.classList.remove("active"));
-
       clickedButton?.classList.add("active");
     }
 
@@ -177,7 +155,7 @@ let books = selectedCategory.books;
         renderBooks([]);
       }
     }
-</script>
+  </script>
 </Layout>
 
 <style>
@@ -188,11 +166,10 @@ let books = selectedCategory.books;
   }
 
   .categories__catBtn.active, .authors__authorBtn.active {
-  background-color: var(--c-darkgreen);
-  color: white;
-  border: 2px solid var(--c-light);
-}
-
+    background-color: var(--c-darkgreen);
+    color: white;
+    border: 2px solid var(--c-light);
+  }
 
   .categories__catBtn, .authors__authorBtn {
     padding: 1rem 2rem;
