@@ -69,7 +69,12 @@ const thumbnailUrlAuthor =
         )
       }
     </div>
-    <a href="/books">Show all books</a>
+    <!-- <div class="allBooks"> -->
+       <a class="allBooks" href="/books">
+       <p class="allBooks__txt">Show all books</p> 
+      </a>
+    <!-- </div> -->
+   
   </section>
 
   <section class="authorOfTheMonth">
@@ -115,3 +120,24 @@ const thumbnailUrlAuthor =
     <Collection />
   </section>
 </Layout>
+
+<style>
+  .allBooks{
+    color: white;
+    text-decoration: none;
+  }
+  .allBooks__txt{
+    width: fit-content;
+    color: white;
+    padding: var(--s1) var(--s2);
+    margin-top: var(--s2);
+    background-color: var(--c-darkgreen);
+    border-radius: var(--border-radius);
+    text-decoration: none;
+  }
+  .allBooks:hover .allBooks__txt:hover{
+    background-color: black;
+  }
+ 
+
+</style>

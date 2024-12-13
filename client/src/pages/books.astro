@@ -101,10 +101,22 @@ let books = selectedCategory.books;
     const categoryButtons = document.querySelectorAll(".categories__catBtn");
     const authorButtons = document.querySelectorAll(".authors__authorBtn");
 
-    // Handle category filter
+    // Utility function to handle active state across both groups
+    function setActiveButton(clickedButton) {
+      // Remove active state from all buttons in both rows
+      categoryButtons.forEach((button) => button.classList.remove("active"));
+      authorButtons.forEach((button) => button.classList.remove("active"));
+
+      // Add active state to the clicked button
+      clickedButton.classList.add("active");
+    }
+
+    // Handle category filter with active state
     categoryButtons.forEach((button) => {
       button.addEventListener("click", async (event) => {
         const categoryId = event.target.getAttribute("data-category-id");
+        setActiveButton(event.target); // Update active state
+
         if (categoryId) {
           try {
             const response = await fetch(
@@ -123,10 +135,12 @@ let books = selectedCategory.books;
       });
     });
 
-    // Handle author filter
+    // Handle author filter with active state
     authorButtons.forEach((button) => {
       button.addEventListener("click", async (event) => {
         const authorId = event.target.getAttribute("data-author-id");
+        setActiveButton(event.target); // Update active state
+
         if (authorId) {
           try {
             const response = await fetch(
@@ -144,7 +158,9 @@ let books = selectedCategory.books;
         }
       });
     });
-  </script>
+</script>
+
+
 </Layout>
 
 <style>
@@ -153,6 +169,13 @@ let books = selectedCategory.books;
     justify-content: space-between;
     margin-bottom: 20px;
   }
+
+  .categories__catBtn.active, .authors__authorBtn.active {
+  background-color: var(--c-darkgreen);
+  color: white;
+  border: 2px solid var(--c-light);
+}
+
 
   .categories__catBtn, .authors__authorBtn {
     padding: 1rem 2rem;
