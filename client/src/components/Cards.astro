@@ -1,16 +1,25 @@
 ---
+import { Image, Picture } from "astro:assets";
 const { book, thumbnailUrl } = Astro.props;
 ---
 
 <div class="card">
   <div class="card__image">
-    <img src={thumbnailUrl} alt={book.title || "No title"} />
+    <!-- <img src={thumbnailUrl} alt={book.title || "No title"} /> -->
+    <Image
+    src={thumbnailUrl}
+    alt="Product image"
+    width="300"
+    height="400"
+    widths={[250, 350, 500, 750]}
+    format="avif"
+    sizes="(min-width: 2960px) calc(12.5vw - 118px), (min-width: 2600px) calc(5vw + 121px), (min-width: 2240px) calc(5.29vw + 131px), (min-width: 1900px) calc(5vw + 157px), (min-width: 1540px) calc(4.71vw + 180px), (min-width: 1160px) calc(3.33vw + 217px), (min-width: 1120px) calc(325vw - 3455px), (min-width: 760px) calc(3.53vw + 229px), (min-width: 540px) calc(42vw - 43px), calc(8.18vw + 225px)"
+  />
   </div>
   <div class="card_txt">
     <h3>{book.title || "No title"}</h3>
   </div>
   <div class="card__content">
-    <p class="card__price">&euro; {book.price || "No Price"}</p>
     <a href={`/details/${book.documentId}`}>
       <button>Read more</button>
     </a>

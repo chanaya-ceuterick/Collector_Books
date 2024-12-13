@@ -17,7 +17,7 @@ const books = await fetchApi({
 });
 
 // Filter books
-const bestsellerBooks = books.filter((book) => book.bestseller === true);
+const bestsellerBooks = books.filter((book) => book.popular === true);
 const saleBooks = books.filter((book) => book.sale === true);
 
 // Define API parameters for authors
@@ -32,20 +32,20 @@ const authorsData = await fetchApi({
 });
 
 // Find the "Author of the Month"
-const authorOfTheMonth = authorsData.find(
-  (author) => author.MonthAuthor === true,
+const favoAuth = authorsData.find(
+  (author) => author.favouriteAuthor === true,
 );
 
 // Prepare the author image URL (always pass the image path or placeholder)
 const thumbnailUrlAuthor =
   import.meta.env.STRAPI_URL +
-  (authorOfTheMonth?.image?.url ||
+  (favoAuth?.image?.url ||
     "/placeholder-image.jpg");
 ---
 
 <Layout>
   <section class="header">
-    <h1>Chanaya's Bookstore</h1>
+    <h1>Chanaya's Book collection</h1>
   </section>
 
   <section class="bestseller">
@@ -78,13 +78,13 @@ const thumbnailUrlAuthor =
   </section>
 
   <section class="authorOfTheMonth">
-    <h2>Author of the Month</h2>
+    <h2>Favourite author</h2>
   
     {
-      authorOfTheMonth ? (
+      favoAuth ? (
         <div>
           <AuthorMonth
-            author={authorOfTheMonth}
+            author={favoAuth}
             thumbnailUrl={thumbnailUrlAuthor}
           />
          
@@ -97,7 +97,7 @@ const thumbnailUrlAuthor =
   
 
   <section class="onSale">
-    <h2>On Sale</h2>
+    <h2>Bought On Sale</h2>
     <div class="card-container">
       {
         saleBooks.length > 0 ? (

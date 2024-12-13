@@ -30,16 +30,17 @@
       "target": "api::book.book",
       "mappedBy": "authors"
     },
-    "MonthAuthor": {
+    "favouriteAuthor": {
       "type": "boolean"
     },
     "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     }
   }
 }

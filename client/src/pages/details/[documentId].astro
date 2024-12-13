@@ -1,4 +1,5 @@
 ---
+import { Image, Picture } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import Card from "../../components/Cards.astro";
 import fetchApi from "../../lib/strapi";
@@ -93,16 +94,20 @@ const fullTitle = `${book.title} - ${categoryName}`;
 
 <Layout>
   <section class="detailBookInfo">
-    <img src={coverUrl} alt={book.title} class="detailBookInfo__img" />
+    <Image
+      src={coverUrl}
+      alt={book.title}
+      width="300"
+      height="400"
+      class="detailBookInfo__img"
+      widths={[250, 350, 500, 750]}
+      format="avif"
+      sizes="(min-width: 2960px) calc(12.5vw - 118px), (min-width: 2600px) calc(5vw + 121px), (min-width: 2240px) calc(5.29vw + 131px), (min-width: 1900px) calc(5vw + 157px), (min-width: 1540px) calc(4.71vw + 180px), (min-width: 1160px) calc(3.33vw + 217px), (min-width: 1120px) calc(325vw - 3455px), (min-width: 760px) calc(3.53vw + 229px), (min-width: 540px) calc(42vw - 43px), calc(8.18vw + 225px)"
+    />
     <div>
       <h1 class="detailBookInfo__title">{fullTitle}</h1>
       <!-- Title includes category name -->
       <p class="detailBookInfo__desc">{book.description}</p>
-
-      <div class="detailBookInfo__cats">
-        <h3 class="detailBookInfo__price">&euro; {book.price}</h3>
-        <button class="detailBookInfo__btn">BUY</button>
-      </div>
 
       <div class="detailBookInfo__author">
         {
@@ -141,9 +146,14 @@ const fullTitle = `${book.title} - ${categoryName}`;
       <section class="hasCollection">
         <h2>{collectionName} collection</h2>
         <div class="hasCollection__flex">
-          <img
+          <Image
             src={import.meta.env.STRAPI_URL + collectionImg}
             alt={collectionName}
+            width="300"
+            height="400"
+            widths={[250, 350, 500, 750]}
+            format="avif"
+            sizes="(min-width: 2960px) calc(12.5vw - 118px), (min-width: 2600px) calc(5vw + 121px), (min-width: 2240px) calc(5.29vw + 131px), (min-width: 1900px) calc(5vw + 157px), (min-width: 1540px) calc(4.71vw + 180px), (min-width: 1160px) calc(3.33vw + 217px), (min-width: 1120px) calc(325vw - 3455px), (min-width: 760px) calc(3.53vw + 229px), (min-width: 540px) calc(42vw - 43px), calc(8.18vw + 225px)"
           />
           <p>{collectionDes}</p>
         </div>
@@ -186,9 +196,9 @@ const fullTitle = `${book.title} - ${categoryName}`;
   }
 
   .detailBookInfo__img {
-    width: 30vw;
-    height: auto;
-    object-fit: cover;
+    width: 100%!important;
+    height:fit-content;
+    max-width: 30rem;
   }
 
   .detailBookInfo__title {
@@ -199,10 +209,6 @@ const fullTitle = `${book.title} - ${categoryName}`;
 
   .detailBookInfo__desc {
     padding: 0;
-  }
-
-  .detailBookInfo__price {
-    font-size: var(--s15);
   }
 
   .detailBookInfo__author {
@@ -248,15 +254,13 @@ const fullTitle = `${book.title} - ${categoryName}`;
     margin-top: var(--s3);
   }
 
-  .hasCollection__flex
-  {
+  .hasCollection__flex {
     display: flex;
     gap: var(--s2);
   }
-  .hasCollection__flex img
-  {
-  width: 30%;
-  height: auto;
+  .hasCollection__flex img {
+    width: 30%;
+    height: auto;
   }
 
   .otherBooks {

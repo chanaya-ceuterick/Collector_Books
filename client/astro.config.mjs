@@ -6,7 +6,7 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
     image: {
-        domains: ["localhost"],
-        base: "/",
+        // domains: ["localhost"],
+        domains: ["astro.build"],
     }
   });
