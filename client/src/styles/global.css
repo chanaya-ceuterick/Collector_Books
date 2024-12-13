@@ -62,7 +62,7 @@ p{
 button {
   background-color: var(--c-green);
   font-size: 12px;
-  padding: 8px 12px;
+  padding: var(--s1) var(--s2);
   border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
