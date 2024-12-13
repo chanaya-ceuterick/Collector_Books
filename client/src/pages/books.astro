@@ -1,11 +1,10 @@
 ---
-import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import fetchApi from '../lib/strapi';
+import BookCard from '../components/Cards.astro'; // Import the reusable BookCard component
 
-
-// Fetch categories and authors
-const cats = await fetchApi({
+// Fetch categories, authors, and books
+const categories = await fetchApi({
   endpoint: 'categories',
   query: { populate: 'books.cover' },
   wrappedByKey: 'data',
@@ -16,181 +15,186 @@ const authors = await fetchApi({
   query: { populate: 'books.cover' },
   wrappedByKey: 'data',
 });
+
+const books = await fetchApi({
+  endpoint: "books",
+  query: { populate: ["categories", "authors", "cover"] },
+  wrappedByKey: "data",
+});
 ---
 
 <Layout>
   <section>
     <h2>Books</h2>
-    <button class="categories__catBtn" id="allCategoriesBtn">All</button>
 
+    <!-- Categories Section with checkboxes -->
     <h3>Categories</h3>
-    <div class="categories">
-      {cats.map((cat) => (
-        <button class="categories__catBtn" data-category-id={cat.documentId}>
-          {cat.name}
-        </button>
+    <ul>
+      {categories.map((category) => (
+        <li>
+          <label>
+            <span>{category.name}</span>
+            <input
+              class="filteroption category-filter"
+              type="checkbox"
+              value={category.slug}
+              name="category-filter"
+              data-type="category"
+            />
+          </label>
+        </li>
       ))}
-    </div>
+    </ul>
 
+    <!-- Authors Section with checkboxes -->
     <h3>Authors</h3>
-    <div class="authors">
+    <ul>
       {authors.map((author) => (
-        <button class="authors__authorBtn" data-author-id={author.documentId}>
-          {author.name}
-        </button>
+        <li>
+          <label>
+            <span>{author.name}</span>
+            <input
+              class="filteroption author-filter"
+              type="checkbox"
+              value={author.slug}
+              name="author-filter"
+              data-type="author"
+            />
+          </label>
+        </li>
       ))}
-    </div>
+    </ul>
 
-    <div class="card-container" id="card-container">
-      <!-- Books will be inserted here by JS -->
-    </div>
-  </section>
+    <!-- Books Section -->
+    <div id="book-container" class="card-container">
+      {books.map((book) => {
+        const thumbnailUrl = book.cover?.url || "/placeholder-image.jpg";
 
-  <script type="module" client:load>
-const API_URL_BOOKS = `http://localhost:1337/api/books/?populate=cover`;
+        // Safe handling of categories and authors using default empty arrays
+        const categories = Array.isArray(book.categories) ? book.categories.map(c => c.slug) : [];
+        const authors = Array.isArray(book.authors) ? book.authors.map(a => a.slug) : [];
 
-    const cardContainer = document.getElementById("card-container");
-    const urlParams = new URLSearchParams(window.location.search);
-    const authorIdFromQuery = urlParams.get("author");
-
-    const responseAll = await fetch(API_URL_BOOKS);
-    const dataAll = await responseAll.json();
-    const allBooks = dataAll.data || [];
-    renderBooks(allBooks);
-
-    function renderBooks(books) {
-      cardContainer.innerHTML = "";
-      books.forEach((book) => {
-        const thumbnail_url_Books = `http://localhost:1337/${book.cover?.url || '/placeholder-image.jpg'}`;
-        const card = document.createElement("div");
-        card.classList.add("card");
-        card.innerHTML = `
-          <div class="card__image">
-            <Image
-              src="${thumbnail_url_Books}"
-              alt="${book.title || "No title"}"
-              width="300"
-              height="400"
-              widths={[250, 350, 500, 750]}
-              format="avif"
-              sizes="(min-width: 2960px) calc(12.5vw - 118px), (min-width: 2600px) calc(5vw + 121px), (min-width: 2240px) calc(5.29vw + 131px), (min-width: 1900px) calc(5vw + 157px), (min-width: 1540px) calc(4.71vw + 180px), (min-width: 1160px) calc(3.33vw + 217px), (min-width: 1120px) calc(325vw - 3455px), (min-width: 760px) calc(3.53vw + 229px), (min-width: 540px) calc(42vw - 43px), calc(8.18vw + 225px)"
+        return (
+          <div
+            class="book-card"
+            data-category={categories.join(', ')}
+            data-author={authors.join(', ')}
+          >
+            <BookCard
+              book={book}
+              thumbnailUrl={import.meta.env.STRAPI_URL + thumbnailUrl}
             />
           </div>
-          <div class="card_txt">
-            <h3>${book.title || "No title"}</h3>
-          </div>
-          <div class="card__content">
-            <a href="/details/${book.documentId}">
-              <button>Read more</button>
-            </a>
-          </div>
-        `;
-        cardContainer.appendChild(card);
-      });
-    }
-
-    const categoryButtons = document.querySelectorAll(".categories__catBtn");
-    const authorButtons = document.querySelectorAll(".authors__authorBtn");
-
-    function setActiveButton(clickedButton) {
-      categoryButtons.forEach((button) => button.classList.remove("active"));
-      authorButtons.forEach((button) => button.classList.remove("active"));
-      clickedButton?.classList.add("active");
-    }
-
-    // Filter books by authorId if present in the URL
-    if (authorIdFromQuery) {
-      const authorButton = document.querySelector(
-        `.authors__authorBtn[data-author-id="${authorIdFromQuery}"]`
-      );
-
-      // Set the active state and fetch the corresponding books
-      if (authorButton) {
-        setActiveButton(authorButton);
-        const authorId = authorButton.getAttribute("data-author-id");
-        fetchAndRenderBooksByAuthor(authorId);
-      }
-    }
-
-    // Handle category and author buttons
-    categoryButtons.forEach((button) => {
-      button.addEventListener("click", async (event) => {
-        const categoryId = event.target.getAttribute("data-category-id");
-        setActiveButton(event.target);
-
-        if (categoryId) {
-          const response = await fetch(
-            `http://localhost:1337/api/categories/${categoryId}?populate=books.cover`
-          );
-          const data = await response.json();
-          renderBooks(data.data.books || []);
-        } else {
-          renderBooks(allBooks);
-        }
-      });
-    });
-
-    authorButtons.forEach((button) => {
-      button.addEventListener("click", async (event) => {
-        const authorId = event.target.getAttribute("data-author-id");
-        setActiveButton(event.target);
-
-        if (authorId) {
-          fetchAndRenderBooksByAuthor(authorId);
-        } else {
-          renderBooks(allBooks);
-        }
-      });
-    });
-
-    async function fetchAndRenderBooksByAuthor(authorId) {
-      try {
-        const response = await fetch(
-          `http://localhost:1337/api/authors/${authorId}?populate=books.cover`
         );
-        const data = await response.json();
-        renderBooks(data.data.books || []);
-      } catch (error) {
-        console.error("Error fetching author books:", error);
-        renderBooks([]);
-      }
-    }
-  </script>
+      })}
+    </div>
+  </section>
 </Layout>
 
+<script>
+  let activeFilter = {
+    category: null,
+    author: null,
+  };
+
+  const handleOptionChange = (e) => {
+    const selectedCategories = [
+      ...document.querySelectorAll("input[name='category-filter']:checked"),
+    ].map(($input) => $input.value);
+
+    const selectedAuthors = [
+      ...document.querySelectorAll("input[name='author-filter']:checked"),
+    ].map(($input) => $input.value);
+
+    // If a category is selected, uncheck all author filters
+    if (selectedCategories.length > 0) {
+      document.querySelectorAll("input[name='author-filter']").forEach(input => input.checked = false);
+      activeFilter.category = selectedCategories[0]; // Set the active category
+      activeFilter.author = null; // Reset the author filter
+    }
+
+    // If an author is selected, uncheck all category filters
+    if (selectedAuthors.length > 0) {
+      document.querySelectorAll("input[name='category-filter']").forEach(input => input.checked = false);
+      activeFilter.author = selectedAuthors[0]; // Set the active author
+      activeFilter.category = null; // Reset the category filter
+    }
+
+    // Hide books that don't match the selected filter
+    document.querySelectorAll('.book-card').forEach(($card) => {
+      const categories = $card.getAttribute('data-category').split(', ');
+      const authors = $card.getAttribute('data-author').split(', ');
+
+      // Filtering logic: only match category OR author, not both simultaneously
+      const categoryMatch = selectedCategories.length === 0 || selectedCategories.some((category) => categories.includes(category));
+      const authorMatch = selectedAuthors.length === 0 || selectedAuthors.some((author) => authors.includes(author));
+
+      // Show the book only if it matches the selected category OR author
+      if (categoryMatch && authorMatch) {
+        $card.classList.remove('hidden');
+      } else {
+        $card.classList.add('hidden');
+      }
+    });
+  };
+
+  // Ensures the event listeners are applied after the page load
+  document.addEventListener('DOMContentLoaded', () => {
+    const options = document.querySelectorAll('.filteroption');
+    options.forEach((option) => {
+      option.addEventListener('change', (e) => {
+        // If the filter is already active, clicking it again should deselect it
+        if (e.target.checked && activeFilter[e.target.dataset.type] === e.target.value) {
+          e.target.checked = false;
+          activeFilter[e.target.dataset.type] = null;
+        } else {
+          handleOptionChange(e);
+        }
+      });
+    });
+  });
+</script>
+
 <style>
-  .categories, .authors {
+  ul {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    justify-content: center;
   }
 
-  .categories__catBtn.active, .authors__authorBtn.active {
-    background-color: var(--c-darkgreen);
+  input {
+    display: none;
+  }
+
+  label {
+    padding: 0.5rem 1rem;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+  }
+
+  label:hover {
+    background-color: #333;
     color: white;
-    border: 2px solid var(--c-light);
   }
 
-  .categories__catBtn, .authors__authorBtn {
-    padding: 1rem 2rem;
-    background-color: var(--c-green);
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin-bottom: 10px;
-  }
-
-  .categories__catBtn:hover, .authors__authorBtn:hover {
-    background-color: var(--c-darkgreen);
+  label:has(input:checked) {
+    background-color: #333;
     color: white;
+  }
+
+  .book-card {
+    padding: 1rem;
+    border: 1px solid #ddd;
+  }
+
+  .hidden {
+    display: none;
   }
 
   .card-container {
-    margin-top: 20px;
-  }
-
-  .card {
-    padding: 10px;
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1.5rem;
   }
 </style>

@@ -1,20 +1,75 @@
 ---
-import { Image, Picture } from "astro:assets";
+import { Image } from "astro:assets";
 const { book, thumbnailUrl } = Astro.props;
 ---
 
+<style>
+  .card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+    height: 100%;
+  }
+
+  .card:hover {
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  .card__image img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+  }
+
+  .card_txt {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  .card__content {
+    margin-top: auto;
+    padding: 1rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #388e3c;
+  }
+</style>
+
 <div class="card">
   <div class="card__image">
-    <!-- <img src={thumbnailUrl} alt={book.title || "No title"} /> -->
     <Image
-    src={thumbnailUrl}
-    alt="Product image"
-    width="300"
-    height="400"
-    widths={[250, 350, 500, 750]}
-    format="avif"
-    sizes="(min-width: 2960px) calc(12.5vw - 118px), (min-width: 2600px) calc(5vw + 121px), (min-width: 2240px) calc(5.29vw + 131px), (min-width: 1900px) calc(5vw + 157px), (min-width: 1540px) calc(4.71vw + 180px), (min-width: 1160px) calc(3.33vw + 217px), (min-width: 1120px) calc(325vw - 3455px), (min-width: 760px) calc(3.53vw + 229px), (min-width: 540px) calc(42vw - 43px), calc(8.18vw + 225px)"
-  />
+      src={thumbnailUrl}
+      alt={book.title || "No title"}
+      width="300"
+      height="400"
+      widths={[250, 350, 500, 750]}
+      format="avif"
+      sizes="(min-width: 2960px) calc(12.5vw - 118px), (min-width: 2600px) calc(5vw + 121px), (min-width: 2240px) calc(5.29vw + 131px), (min-width: 1900px) calc(5vw + 157px), (min-width: 1540px) calc(4.71vw + 180px), (min-width: 1160px) calc(3.33vw + 217px), (min-width: 1120px) calc(325vw - 3455px), (min-width: 760px) calc(3.53vw + 229px), (min-width: 540px) calc(42vw - 43px), calc(8.18vw + 225px)"
+    />
   </div>
   <div class="card_txt">
     <h3>{book.title || "No title"}</h3>
